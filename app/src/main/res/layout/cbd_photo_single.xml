@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="400dp" android:background="@drawable/boder">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="8"
+         android:gravity="center">
+        <TextView
+            android:id="@+id/cbd_photo_filename"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <com.loopj.android.image.SmartImageView
+            android:id="@+id/cbd_smartimage_pthoto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/cbd_edit_filename"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="修改文件名" />
+        <Button
+            android:id="@+id/cbd_upload_photo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="上传" />
+        <Button
+            android:id="@+id/cbd_photo_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="删除"/>
+    </LinearLayout>
+
+
+</LinearLayout>
