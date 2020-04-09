@@ -1,19 +1,30 @@
 package com.xp.common;
 
+import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
+import com.xp.zjd.po.ZJD;
+
 import java.io.File;
 
 /**
  * Created by Administrator on 2020/3/31.
  */
 public class Photo {
+    @Expose
     private String path;
+    @Expose
     private String name;
-    private String describe;
+    @Expose
+    private String bz;
+    @Expose
     private Integer id;
+    @Expose
+    private Boolean isUpload;
+    private ZJD zjd;
     /**
      * 是否已经上传文件
      */
-    private Boolean isUpload;
+
 
     public Photo(String path,boolean isUpload) {
         setPath(path);
@@ -21,6 +32,14 @@ public class Photo {
     }
     public Photo() {
 
+    }
+
+    public ZJD getZjd() {
+        return zjd;
+    }
+
+    public void setZjd(ZJD zjd) {
+        this.zjd = zjd;
     }
 
     public Integer getId() {
@@ -32,6 +51,9 @@ public class Photo {
     }
 
     public Boolean getUpload() {
+        if(isUpload == null){
+            return false;
+        }
         return isUpload;
     }
 
@@ -49,8 +71,8 @@ public class Photo {
         this.name = name;
     }
 
-    public void setDescribe(String describe) {
-        this.describe = describe;
+    public void setBz(String bz) {
+        this.bz = bz;
     }
 
     public String getPath() {
@@ -64,8 +86,8 @@ public class Photo {
         return name;
     }
 
-    public String getDescribe() {
-        return describe;
+    public String getBz() {
+        return bz;
     }
 
     public boolean equals(Object obj) {
@@ -79,5 +101,16 @@ public class Photo {
         int result = getPath().hashCode();
         result = 29 * result + getPath().hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "path:'" + path + '\'' +
+                ", name:'" + name + '\'' +
+                ", bz:'" + bz + '\'' +
+                ", id:" + id +
+                ", isUpload:" + isUpload +
+                '}';
     }
 }

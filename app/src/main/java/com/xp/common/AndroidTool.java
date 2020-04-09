@@ -71,4 +71,16 @@ public class AndroidTool {
         builder.create().show();
     }
 
+    /**
+     * 异步弹出提示窗口
+     * @param tip
+     */
+    public static void showAnsyTost(final String tip) {
+        getMainActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getMainActivity(),tip,Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

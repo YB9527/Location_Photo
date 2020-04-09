@@ -14,7 +14,7 @@
                       android:id="@+id/cbd_upload_all_photo"
                       android:layout_width="wrap_content"
                       android:layout_height="wrap_content"
-                      android:text="未上传 0 张照片" />
+                      android:text="扫描未上传的照片" />
                 <!--  <Button
                       android:id="@+id/cbd_upload_add_dk"
                       android:layout_width="wrap_content"

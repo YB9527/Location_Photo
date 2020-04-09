@@ -5,6 +5,8 @@ import android.preference.PreferenceActivity;
 import android.widget.Toast;
 
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -60,7 +62,7 @@ public class Tool {
      * @return
      */
     public static String getHostAddress() {
-        String hostAddress = "http://192.168.2.47:8080/";
+        String hostAddress = "http://192.168.3.3:8080/";
         return hostAddress;
     }
 
@@ -174,5 +176,31 @@ public class Tool {
             results.add(t);
         }
         return results;
+    }
+
+    private static Gson gson;
+
+    /**
+     * 得到 只处理 @Expose json对象
+     * @return
+     */
+    public static Gson getGson(){
+        if(gson == null){
+            gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation()
+                    .create();
+        }
+        return  gson;
+    }
+
+    /**
+     * 使用json功能复制对象
+     * @param obj
+     * @param <T>
+     * @return
+     */
+    public static<T> T CopyObject(T obj) {
+        Gson gson = getGson();
+        String json = gson.toJson(obj);
+        return (T) gson.fromJson(json,obj.getClass());
     }
 }

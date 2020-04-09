@@ -1,4 +1,4 @@
-package com.xp.cbd;
+package com.xp.zjd;
 
 import android.content.Context;
 
@@ -9,42 +9,37 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.TextHttpResponseHandler;
 import com.xp.R;
-import com.xp.cbd.photo.PhotoService;
-import com.xp.cbd.photo.PhotosFragment;
-import com.xp.cbd.po.DK;
+import com.xp.zjd.photo.PhotoService;
+import com.xp.zjd.photo.PhotosFragment;
+import com.xp.zjd.po.ZJD;
 import com.xp.common.AndroidTool;
-import com.xp.common.Photo;
-import com.xp.common.Tool;
 
 
-import org.apache.http.Header;
-
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by Administrator on 2020/3/31.
  */
 
-public class DKTableAdapter extends BaseAdapter {
+public class ZJDTableAdapter extends BaseAdapter {
 
-    private List<DK> datas;
+    private List<ZJD> datas;
     private Context context;
     LayoutInflater layoutInflater;
 
-    public DKTableAdapter(Context context) {
+    public ZJDTableAdapter(Context context) {
         this.context = context;
+        this.datas = new ArrayList<>();
         init();
     }
 
-    public DKTableAdapter(Context context, List<DK> datas) {
-        this.context = context;
-        this.datas = datas;
-        init();
-    }
 
+    public void addDatas( List<ZJD> datas) {
+        this.datas.addAll(datas);
+        this.notifyDataSetChanged();
+    }
     /**
      * 类初始
      */
@@ -83,22 +78,28 @@ public class DKTableAdapter extends BaseAdapter {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        DK dk = datas.get(position);
-        viewHolder.tv_dkbm.setText(dk.getmDKBM());
-        viewHolder.tv_dkmc.setText(dk.getmDKMC());
+        ZJD zjd = datas.get(position);
+        viewHolder.tv_dkbm.setText(zjd.getmDKBM());
+        viewHolder.tv_dkmc.setText(zjd.getmDKMC());
 
         //没有 查找过时，才去查找本地
-        if(!dk.isSelectNative()){
-            PhotoService.addNativePhoto(dk);
+        if(!zjd.isSelectNative()){
+            PhotoService.addNativePhoto(zjd);
         }
         //照片
-        viewHolder.tv_uploadCount.setText("已上传："+PhotoService.getPhotoState(dk,true).size());
+        viewHolder.tv_uploadCount.setText("已上传："+PhotoService.getPhotoState(zjd,true).size());
 
-        viewHolder.tv_unuploadCount.setText("已上传："+PhotoService.getPhotoState(dk,false).size());
-        viewHolder.tv_phtot_look.setTag(dk);
+        viewHolder.tv_unuploadCount.setText("未上传："+PhotoService.getPhotoState(zjd,false).size());
+        viewHolder.tv_phtot_look.setTag(zjd);
         //照片被点击
         viewHolder.tv_phtot_look.setOnClickListener(new PhotoClick());
         return convertView;
+    }
+
+    public void setDatas(List<ZJD> zjds) {
+        this.datas.clear();
+        this.datas.addAll(zjds);
+        this.notifyDataSetChanged();
     }
 /*  @Override
   public View getView(int position, View convertView, ViewGroup parent) {
@@ -141,8 +142,8 @@ public class DKTableAdapter extends BaseAdapter {
 
         @Override
         public void onClick(View v) {
-            DK dk = (DK) v.getTag();
-            PhotosFragment fragment = new PhotosFragment(dk);
+            ZJD ZJD = (ZJD) v.getTag();
+            PhotosFragment fragment = new PhotosFragment(ZJD);
             AndroidTool.replaceFrameLayout(fragment);
         }
     }

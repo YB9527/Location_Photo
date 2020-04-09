@@ -27,7 +27,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.xp.cbd.DKFragment;
+import com.xp.zjd.ZJDFragment;
 import com.xp.common.AndroidTool;
 import com.xp.map.MapFragment;
 import com.xp.menu.SetCurrentXZQYFragment;
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity
         switch (id) {
             case R.id.dktable_item:
                 //查看地块
-               AndroidTool.replaceFrameLayout(new DKFragment());
+               AndroidTool.replaceFrameLayout(new ZJDFragment());
                 break;
             case  R.id.cbd_jtcy_item:
                 //回到首页
