@@ -12,7 +12,7 @@ import java.util.List;
 
 public class PhotoService {
     private static final String imageBootUrl = Tool.getHostAddress() + "zjdphoto/";
-    public static final String dirRoot = AndroidTool.getMainActivity().getExternalCacheDir().getAbsolutePath() + "/zjd/";
+    public static final String dirRoot = AndroidTool.getMainActivity().getFilesDir().getAbsolutePath() + "/zjd/";
 
     public static String getDKPhotoDir() {
         return dirRoot + "zjdphoto/";

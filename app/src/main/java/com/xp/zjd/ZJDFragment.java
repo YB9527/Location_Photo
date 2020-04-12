@@ -81,11 +81,11 @@ public class ZJDFragment extends Fragment implements View.OnClickListener {
 
     public ZJDTableAdapter getAdapter(View view) {
         final ZJDTableAdapter adapter = new ZJDTableAdapter(view.getContext());
-        /*List<ZJD> zjds1 = new ArrayList<ZJD>();
+       /* final List<ZJD> zjds = new ArrayList<ZJD>();
         for (int i = 0; i < 5; i++) {
             ZJD zjd = new ZJD(i + "", "hello YB  " + i);
             zjd.setId(i);
-            zjds1.add(zjd);
+            zjds.add(zjd);
             Photo photo = new Photo(PhotoService.dirRoot+"dkphoto/"+ zjd.getmDKBM()+"/timg.jpg",true);
            List<Photo> photos = new ArrayList<>();
            photos.add(photo);
@@ -111,8 +111,8 @@ public class ZJDFragment extends Fragment implements View.OnClickListener {
                         .create();
 
                 final String responseStr = response.body().string();
-                final List<ZJD> zjds = gson.fromJson(responseStr, new TypeToken<List<ZJD>>() {
-                }.getType());
+                final List<ZJD> zjds = gson.fromJson(responseStr, new TypeToken<List<ZJD>>() {}.getType());
+
                 AndroidTool.getMainActivity().runOnUiThread(new Runnable() {  //回到UI主线程
                     @Override
                     public void run() {
@@ -140,7 +140,7 @@ public class ZJDFragment extends Fragment implements View.OnClickListener {
 
 
     /**
-     * 上传照片
+     * 上传所有照片
      */
     public void UploadAllPhoto() {
         //

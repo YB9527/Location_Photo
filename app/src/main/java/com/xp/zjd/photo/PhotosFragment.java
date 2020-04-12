@@ -5,16 +5,21 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +37,7 @@ import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.loopj.android.image.SmartImage;
 import com.loopj.android.image.SmartImageView;
+import com.xp.MainActivity;
 import com.xp.R;
 import com.xp.common.OkHttpClientUtils;
 import com.xp.zjd.po.ZJD;
@@ -103,54 +109,66 @@ public class PhotosFragment extends Fragment {
     private class AddPhotoClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-            // 创建File对象，用于存储拍照后的图片
-            //存放在手机SD卡的应用关联缓存目录下
-            File outputImage = new File(PhotoService.dirRoot, "临时照片.jpg");
 
-            Tool.exitsDir(outputImage.getParent(), true);
-            // 从Android 6.0系统开始，读写SD卡被列为了危险权限，如果将图片存放在SD卡的任何其他目录，
-            //   都要进行运行时权限处理才行，而使用应用关联 目录则可以跳过这一步
-            try {
-                if (outputImage.exists()) {
-                    outputImage.delete();
+                // 创建File对象，用于存储拍照后的图片
+                //存放在手机SD卡的应用关联缓存目录下
+                File outputImage = new File(PhotoService.dirRoot, "临时照片.jpg");
+
+                Tool.exitsDir(outputImage.getParent(), true);
+                // 从Android 6.0系统开始，读写SD卡被列为了危险权限，如果将图片存放在SD卡的任何其他目录，
+                //   都要进行运行时权限处理才行，而使用应用关联 目录则可以跳过这一步
+                try {
+                    if (outputImage.exists()) {
+                        outputImage.delete();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
                   /* 7.0系统开始，直接使用本地真实路径的Uri被认为是不安全的，会抛 出一个FileUriExposedException异常。
                    而FileProvider则是一种特殊的内容提供器，它使用了和内 容提供器类似的机制来对数据进行保护，
                    可以选择性地将封装过的Uri共享给外部，从而提高了 应用的安全性*/
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                //大于等于版本24（7.0）的场合
-                imageUri = FileProvider.getUriForFile(view.getContext(), "com.xp.fileprovider", outputImage);
-            } else {
-                //小于android 版本7.0（24）的场合
-                imageUri = Uri.fromFile(outputImage);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    //大于等于版本24（7.0）的场合
+                    imageUri = FileProvider.getUriForFile(view.getContext(), "com.xp.fileprovider", outputImage);
+                } else {
+                    //小于android 版本7.0（24）的场合
+                    imageUri = Uri.fromFile(outputImage);
+                }
+                //启动相机程序
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);//
+                startActivityForResult(intent, TAKE_CAMERA);
+            try {
+            }catch (Exception e){
+                Toast.makeText(AndroidTool.getMainActivity(),e.getMessage(),Toast.LENGTH_LONG).show();
             }
-            //启动相机程序
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);//
-            startActivityForResult(intent, TAKE_CAMERA);
+
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        switch (requestCode) {
-            case TAKE_CAMERA:
-                if (resultCode == RESULT_OK) {
-                    // 将拍摄的照片显示出来
-                    String path = PhotoService.dirRoot + "临时照片.jpg";
-                    Photo photo = new Photo(path, false);
-                    editName(photo, 0);
 
-                }
-                break;
-            default:
-                break;
+            switch (requestCode) {
+                case TAKE_CAMERA:
+                    if (resultCode == RESULT_OK) {
+                        // 将拍摄的照片显示出来
+                        String path = PhotoService.dirRoot + "临时照片.jpg";
+                        Photo photo = new Photo(path, false);
+                        editName(photo, 0);
+
+                    }
+                    break;
+                default:
+                    break;
+            }
+        try {
+        }catch (Exception e){
+            Toast.makeText(AndroidTool.getMainActivity(),e.getMessage(),Toast.LENGTH_LONG).show();
         }
+
     }
 
     private class ViewHolder {
@@ -281,23 +299,26 @@ public class PhotosFragment extends Fragment {
                 viewHolder.cbd_upload_photo = view.findViewById(R.id.cbd_upload_photo);
                 viewHolder.cbd_edit_filename = view.findViewById(R.id.cbd_edit_filename);
 
-                viewHolder.btu_photo_delete.setTag(position);
-                viewHolder.cbd_upload_photo.setTag(position);
-                viewHolder.cbd_edit_filename.setTag(position);
+
                 convertView = view;
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
+            viewHolder.btu_photo_delete.setTag(position);
+            viewHolder.cbd_upload_photo.setTag(position);
+            viewHolder.cbd_edit_filename.setTag(position);
 
             viewHolder.cbd_photo_filename.setText(photo.getName());
             viewHolder.btu_photo_delete.setOnClickListener(this);
             if (photo.getUpload()) {
-                viewHolder.cbd_upload_photo.setVisibility(View.GONE);//上传的话，就隐藏 上传按钮
+                viewHolder.cbd_upload_photo.setVisibility(View.INVISIBLE);//上传的话，就隐藏 上传按钮
             } else {
-                viewHolder.cbd_upload_photo.setOnClickListener(this);
+
+                viewHolder.cbd_upload_photo.setVisibility(View.VISIBLE);//上传的话，就隐藏 上传按钮
             }
             viewHolder.cbd_edit_filename.setOnClickListener(this);
+            viewHolder.cbd_upload_photo.setOnClickListener(this);
 
             SmartImageView smartImageView = viewHolder.smartImageView;
 
@@ -313,6 +334,8 @@ public class PhotosFragment extends Fragment {
             return convertView;
 
         }
+
+
 
         /**
          * 先把网络照片下载本地了，再显示本地照片
@@ -422,7 +445,7 @@ public class PhotosFragment extends Fragment {
                         public void run() {
                             if (responseStr.equals("0")) {
                                 photo.setUpload(true);
-                                uploadBtu.setVisibility(View.GONE);
+                                uploadBtu.setVisibility(View.INVISIBLE);
                                 Toast.makeText(view.getContext(), "上传成功！", Toast.LENGTH_SHORT).show();
                             } else {
                                 Toast.makeText(view.getContext(), "上传失败！", Toast.LENGTH_SHORT).show();
