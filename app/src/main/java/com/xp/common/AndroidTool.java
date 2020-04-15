@@ -3,7 +3,12 @@ package com.xp.common;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Matrix;
+import android.graphics.PointF;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -41,9 +46,28 @@ public class AndroidTool {
      * @param fragment 要显示的页面
      */
     public static void replaceFrameLayout(Fragment fragment) {
+        replaceFrameLayout(R.id.framelayout_content,fragment);
+    }
+
+    /**
+     * fragment 页面替换
+     * @param srcFragment
+     * @param descfragment
+     */
+    public static void replaceFrameLayout(Fragment srcFragment, Fragment descfragment) {
+        replaceFrameLayout(srcFragment.getId(),descfragment);
+    }
+
+    /**
+     * fragment 页面替换
+     * @param srcFragmentId
+     * @param descfragment
+     */
+    public static void replaceFrameLayout(int srcFragmentId, Fragment descfragment) {
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.framelayout_content, fragment);
+        transaction.replace(srcFragmentId, descfragment);
+
         transaction.addToBackStack(null);
         transaction.commit();
     }
@@ -83,4 +107,6 @@ public class AndroidTool {
             }
         });
     }
+
+
 }

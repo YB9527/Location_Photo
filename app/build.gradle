@@ -10,6 +10,12 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+    }
+    packagingOptions{
+        exclude 'META-INF/LGPL2.1'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
     }
     buildTypes {
         release {
@@ -36,7 +42,10 @@ dependencies {
     implementation files('libs/httpcore-4.2.4.jar')
     implementation files('libs/httpmime-4.2.5.jar')
     implementation 'com.google.code.gson:gson:2.7'
-    implementation files('libs/BaiduLBS_Android.jar')
+
 
     implementation("com.squareup.okhttp3:okhttp:4.3.1")
+
+    implementation 'com.esri.arcgis.android:arcgis-android:10.2.9'
+    implementation 'com.android.support:multidex:1.0.3'
 }

@@ -4,7 +4,7 @@ package com.xp;
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.baidu.mapapi.map.MapView;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -28,16 +28,27 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.xp.common.OkHttpClientUtils;
 import com.xp.zjd.ZJDFragment;
 import com.xp.common.AndroidTool;
-import com.xp.map.MapFragment;
 import com.xp.menu.SetCurrentXZQYFragment;
 import com.xp.menu.SetingsFragment;
+import com.xp.zjd.fragments.ZJDArcgisMap;
+import com.xp.zjd.service.ZJDService;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private FrameLayout frameLayout = null;
-    private MapView mMapView = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -76,7 +87,8 @@ public class MainActivity extends AppCompatActivity
         AndroidTool.setMainActivity(this);
         AndroidTool.replaceFrameLayout(initFragment);
 
-
+        //如果 无离线数据库
+        ZJDService.downloadGeodatase(true);
 
     }
     @Override
@@ -134,7 +146,10 @@ public class MainActivity extends AppCompatActivity
                 AndroidTool.replaceFrameLayout(new InitFragment());
                 break;
             case  R.id.map_item:
-                AndroidTool.replaceFrameLayout(new MapFragment());
+                break;
+            case  R.id.zjd_arcgismap_item:
+                AndroidTool.replaceFrameLayout(new ZJDArcgisMap());
+                break;
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);

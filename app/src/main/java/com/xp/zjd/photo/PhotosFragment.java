@@ -39,6 +39,7 @@ import com.loopj.android.image.SmartImage;
 import com.loopj.android.image.SmartImageView;
 import com.xp.MainActivity;
 import com.xp.R;
+import com.xp.common.ImageViewTouch;
 import com.xp.common.OkHttpClientUtils;
 import com.xp.zjd.po.ZJD;
 import com.xp.common.AndroidTool;
@@ -77,6 +78,10 @@ public class PhotosFragment extends Fragment {
     private View view;
     LayoutInflater layoutInflater;
 
+    public PhotosFragment() {
+        this.zjd = new ZJD();
+
+    }
 
     public PhotosFragment(ZJD zjd) {
         this.zjd = zjd;
@@ -287,7 +292,7 @@ public class PhotosFragment extends Fragment {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            Photo photo = datas.get(position);
+            final Photo photo = datas.get(position);
 
             ViewHolder viewHolder = null;
             if (convertView == null) {
@@ -321,7 +326,13 @@ public class PhotosFragment extends Fragment {
             viewHolder.cbd_upload_photo.setOnClickListener(this);
 
             SmartImageView smartImageView = viewHolder.smartImageView;
-
+            smartImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AndroidTool.replaceFrameLayout(ImageViewTouch.getImageViewTouch(photo.getPath()));
+                }
+            });
+            //smartImageView.setOnTouchListener(AndroidTool.ImageTouchListener.getImageTouchListener(smartImageView));
             File file = new File(photo.getPath());
             //如果不存在，在网上下载
             if (!file.exists()) {
@@ -450,7 +461,6 @@ public class PhotosFragment extends Fragment {
                             } else {
                                 Toast.makeText(view.getContext(), "上传失败！", Toast.LENGTH_SHORT).show();
                             }
-
                         }
                     });
                 }

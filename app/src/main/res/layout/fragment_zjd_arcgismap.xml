@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/addNotesPoint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="添加点注记" />
+        <Button
+            android:id="@+id/addNotesLine"
+            android:layout_toRightOf="@id/addNotesPoint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="添加线注记" />
+        <Button
+            android:id="@+id/addNoteslPolygon"
+            android:layout_toRightOf="@id/addNotesLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="添加面注记" />
+        <Button
+            android:id="@+id/lookMessage"
+            android:layout_toRightOf="@id/addNoteslPolygon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="信息查看" />
+        <Button
+            android:id="@+id/changeBottomDrawing"
+            android:layout_below = "@id/addNotesPoint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="地图切换" />
+        <Button
+            android:id="@+id/clearMapState"
+            android:layout_below="@id/addNotesPoint"
+            android:layout_toRightOf="@id/changeBottomDrawing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="清除地图状态" />
+
+
+        <com.esri.android.map.MapView
+            android:id="@+id/map"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </RelativeLayout>
+
+
+</FrameLayout>

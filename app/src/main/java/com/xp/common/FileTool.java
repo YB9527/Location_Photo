@@ -8,6 +8,8 @@ import androidx.annotation.RequiresApi;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 
@@ -154,5 +156,40 @@ boolean bl = (filePath == null|| filePath.trim() == "")?false:new File(filePath)
     public static boolean exitsDir(String dir, boolean isCreated) {
         File  f = new File(dir);
         return  exitsDir(f,isCreated);
+    }
+
+    /**
+     * 保存文件
+     * @param is 数据流
+     * @param savePath 保存的位置
+     */
+    public static void saveFile(InputStream is, String savePath) {
+
+        byte[] buf = new byte[2048];
+        int len = 0;
+        FileOutputStream fos = null;
+        // 储存下载文件的目录
+        try {
+            fos = new FileOutputStream(new File(savePath));
+            long sum = 0;
+            while ((len = is.read(buf)) != -1) {
+                fos.write(buf, 0, len);
+                sum += len;
+            }
+            fos.flush();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (is != null)
+                    is.close();
+            } catch (IOException e) {
+            }
+            try {
+                if (fos != null)
+                    fos.close();
+            } catch (IOException e) {
+            }
+        }
     }
 }

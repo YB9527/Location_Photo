@@ -179,6 +179,7 @@ public class ZJDFragment extends Fragment implements View.OnClickListener {
                                         @Override
                                         public void onClick(DialogInterface dialogInterface, int i) {
 
+
                                             ZJDService.UploadAllPhoto(photos, new Callback() {
                                                 @Override
                                                 public void onFailure(@NotNull Call call, @NotNull IOException e) {

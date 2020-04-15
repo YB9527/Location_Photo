@@ -5,6 +5,10 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/zjd_arcgismap_item"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="ArcgisMap" />
+        <item
             android:id="@+id/map_item"
             android:icon="@drawable/ic_menu_camera"
             android:title="地图" />
