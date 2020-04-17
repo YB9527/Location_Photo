@@ -1,13 +1,22 @@
 package com.xp.common;
 
+import android.widget.Toast;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.xp.common.po.ResultData;
+import com.xp.common.po.Status;
+import com.xp.xzqy.po.XZDM;
+import com.xp.xzqy.po.XZDMVo;
 import com.xp.zjd.service.ZJDService;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,16 +43,26 @@ public class OkHttpClientUtils {
      * 使用 Callback 回调可返回子线程中获得的网络数据
      *
      * @param url
-     * @param t   对象
+     * @param t   对象  如果发送 list 集合， 请用带 mark 的参数 的重载方法
      */
     public static <T> void httpPost(final String url, final T t, final Callback callback) {
+        httpPost(url,t.getClass().getSimpleName().toLowerCase(),t,callback);
+    }
+    /**
+     * Post请求 异步
+     * 使用 Callback 回调可返回子线程中获得的网络数据
+     *
+     * @param url
+     * @param t   对象
+     */
+    public static <T> void httpPost(final String url, final String mark, final T t, final Callback callback) {
         new Thread(new Runnable() {
             @Override
             public void run() {
 
                 OkHttpClient okHttpClient = getClient();
                 FormBody.Builder formBodyBuilder = new FormBody.Builder();
-                formBodyBuilder.add( t.getClass().getSimpleName().toLowerCase(), Tool.getGson().toJson(t));
+                formBodyBuilder.add(mark, Tool.getGson().toJson(t));
                 FormBody formBody = formBodyBuilder.build();
                 Request request = new Request
                         .Builder()
@@ -57,7 +76,6 @@ public class OkHttpClientUtils {
             }
         }).start();
     }
-
     /**
      * 发送多个对象到后台
      *
@@ -108,10 +126,11 @@ public class OkHttpClientUtils {
 
     /**
      * 发送get请求
+     *
      * @param url
      * @param callback
      */
-    public static void httpGet(final String url,final Callback callback) {
+    public static void httpGet(final String url, final Callback callback) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -124,18 +143,47 @@ public class OkHttpClientUtils {
     }
 
     /**
-     *get 异步请求
+     * get 异步请求
+     *
      * @param basicUrl
-     * @param params 发送的地址参数
+     * @param params   发送的地址参数
      * @param callback
      */
-    public static void httpGet(final String basicUrl,final Map<String,String> params, final Callback callback) {
+    public static void httpGet(final String basicUrl, final Map<String, String> params, final Callback callback) {
         StringBuilder sb = new StringBuilder();
-        for (String key:params.keySet()
+        for (String key : params.keySet()
         ) {
-            sb.append("/"+key+"="+params.get(key));
+            sb.append("/" + key + "=" + params.get(key));
         }
-        httpGet(basicUrl+sb.toString(),callback);
+        httpGet(basicUrl + sb.toString(), callback);
+    }
+
+    /**
+     * http 返回的数据封装成 ResultData  并且 data json 数据 set 到 object 中
+     *
+     * @param response
+     * @return
+     */
+    public static ResultData ResposeToResultData(Response response, Type clazz) {
+        try {
+
+            String resposeStr = response.body().string();
+            ResultData resultData = Tool.getGson().fromJson(resposeStr, ResultData.class);
+            String json = resultData.getJson();
+            if (!Tool.isEmpty(json)) {
+                try {
+                    Object obj = Tool.getGson().fromJson(json, clazz);
+                    resultData.setObject(obj);
+                } catch (Exception e) {
+                    AndroidTool.showAnsyTost("json对象有问题:" + json);
+                }
+
+            }
+            return resultData;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ResultData(Status.Error, "没有返回值");
     }
 }
 

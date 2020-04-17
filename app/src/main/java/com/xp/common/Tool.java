@@ -72,7 +72,7 @@ public class Tool {
      * @return
      */
     public static String getHostAddress() {
-        String hostAddress = "http://192.168.3.3:8080/";
+        String hostAddress = "http://192.168.2.183:8080/";
         return hostAddress;
     }
 
@@ -212,5 +212,14 @@ public class Tool {
         Gson gson = getGson();
         String json = gson.toJson(obj);
         return (T) gson.fromJson(json,obj.getClass());
+    }
+
+    /**
+     * 检查 bool 是否为 true ，null是返回 false
+     * @param bool
+     * @return
+     */
+    public static boolean isTrue(Boolean bool) {
+        return bool == null? false:bool;
     }
 }

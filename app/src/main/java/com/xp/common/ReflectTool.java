@@ -1,5 +1,7 @@
 package com.xp.common;
 
+import android.widget.Toast;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -35,15 +37,21 @@ public class ReflectTool {
         }
         Class tClass  = list.get(0).getClass() ;
         Method m=null;
+        //Object[] paramters =new Object[1];
         try {
             m =  tClass.getMethod(methodName);
             for (T t :list
             ) {
-               String key =  m.invoke(t,null).toString();
-                map.put(key,t);
+               String key =  m.invoke(t).toString();
+               if(map.containsKey(key)){
+                   AndroidTool.showAnsyTost("主键重复："+key);
+               }else{
+                   map.put(key,t);
+               }
+
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            AndroidTool.showAnsyTost(e.getMessage());
         }
         return map;
     }

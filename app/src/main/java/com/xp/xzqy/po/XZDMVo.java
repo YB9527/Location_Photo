@@ -15,6 +15,10 @@ public class XZDMVo {
         this.xzdm = xzdm;
     }
 
+    public XZDMVo(XZDM xzdm, Boolean isSelect) {
+        this.xzdm = xzdm;
+        this.isSelect = isSelect;
+    }
 
     public XZDM getXzdm() {
         return xzdm;

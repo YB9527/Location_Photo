@@ -7,13 +7,15 @@ import com.xp.common.Tool;
  */
 
 public class XZDMService {
+    public static String selectXZDMRedis = "selectXZDM";
+
     /**
      * 返回 行政区域访问web时的跟路径
      *
      * @return
      */
     public static String getURLBasic() {
-        return Tool.getHostAddress() + "xzqy/";
+        return Tool.getHostAddress() + "xzdm/";
     }
 
 }

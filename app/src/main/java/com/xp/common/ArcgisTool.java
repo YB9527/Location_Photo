@@ -43,6 +43,4 @@ public class ArcgisTool {
         }
         return zjds;
     }
-
-
 }

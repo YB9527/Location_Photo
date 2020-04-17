@@ -24,7 +24,12 @@ public class UserService {
      * 得到登录的 user ，如果没有登录的话，会跳转到登录
      */
     public static User getUser(){
-        User user = new User("123","123");
+        {
+            //测试数据
+            user = new User("123","123");
+            user.setId(1L);
+        }
+
         if(user == null){
             AndroidTool.replaceFrameLayout( new Login());
             return  null;
