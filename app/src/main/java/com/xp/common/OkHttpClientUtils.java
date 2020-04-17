@@ -40,11 +40,10 @@ public class OkHttpClientUtils {
         new Thread(new Runnable() {
             @Override
             public void run() {
+
                 OkHttpClient okHttpClient = getClient();
-
                 FormBody.Builder formBodyBuilder = new FormBody.Builder();
-                formBodyBuilder.add("data", Tool.getGson().toJson(t));
-
+                formBodyBuilder.add( t.getClass().getSimpleName().toLowerCase(), Tool.getGson().toJson(t));
                 FormBody formBody = formBodyBuilder.build();
                 Request request = new Request
                         .Builder()

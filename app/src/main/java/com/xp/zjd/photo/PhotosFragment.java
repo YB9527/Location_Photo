@@ -78,10 +78,6 @@ public class PhotosFragment extends Fragment {
     private View view;
     LayoutInflater layoutInflater;
 
-    public PhotosFragment() {
-        this.zjd = new ZJD();
-
-    }
 
     public PhotosFragment(ZJD zjd) {
         this.zjd = zjd;
@@ -104,6 +100,11 @@ public class PhotosFragment extends Fragment {
         this.layoutInflater = LayoutInflater.from(view.getContext());
         Button addphoto = view.findViewById(R.id.btu_cbd_photo_add);
         addphoto.setOnClickListener(new AddPhotoClickListener());
+
+        TextView tv_zdnum = view.findViewById(R.id.tv_zdnum);
+        tv_zdnum.setText(zjd.getZDNUM());
+        TextView tv_quanli = view.findViewById(R.id.tv_quanli);
+        tv_quanli.setText(zjd.getQUANLI());
 
         ListView listView = view.findViewById(R.id.cbd_listview_photoshow);
         cbdPhotoAdpater = new CBDPhotoAdpater(Tool.copyList(zjd.getPhotos()));
@@ -221,10 +222,11 @@ public class PhotosFragment extends Fragment {
                                 if (photo.getUpload()) {
 
                                     //给服务器使用副本，如果没有问题才修改原件
-                                    Photo photoCopy = Tool.CopyObject(photo);
+                                    Photo photoCopy = Tool.copyObject(photo);
                                     photoCopy.setPath(desc);
                                     Map<String, Object> map = new HashMap<>();
                                     map.put("photo", photoCopy);
+                                    zjd.setPhotos(null);
                                     map.put("zjd", zjd);
                                     OkHttpClientUtils.httpPostObjects(PhotoService.getURLBasic() + "updatephoto", map, new Callback() {
                                         @Override

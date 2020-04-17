@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 
 public class JSONUtils {
     /**
-     * Bean 转换为JSON对象
+     * obj 转换为JSON对象
      * @param obj
      * @return
      */
@@ -37,6 +37,8 @@ public class JSONUtils {
         return strBean.toString();
 
     }
+
+
 
 
 

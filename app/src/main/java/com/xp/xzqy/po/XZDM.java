@@ -1,51 +1,70 @@
 package com.xp.xzqy.po;
 
-/**
- * Created by Administrator on 2020/3/31.
- */
+import com.google.gson.annotations.Expose;
+import com.xp.zjd.po.ZJD;
 
+import java.util.List;
+
+/**
+ * 行政区域
+ */
 public class XZDM {
-    private int id;
-    private String mDJZQDM;
-    private String mDJZQMC;
+    @Expose
+    private Long id;
+    @Expose
+    private String DJZQDM;
+    @Expose
+    private String DJZQMC;
+
+    private List<ZJD> zjds;
+
     public XZDM(){
 
     }
-    public XZDM(String mDJZQDM, String mDJZQMC) {
-        this.mDJZQDM = mDJZQDM;
-        this.mDJZQMC = mDJZQMC;
+
+    public XZDM(String DJZQDM, String DJZQMC) {
+        this.DJZQDM = DJZQDM;
+        this.DJZQMC = DJZQMC;
     }
 
-    public int getId() {
-        return id;
+    public List<ZJD> getZjds() {
+        return zjds;
     }
 
-    public String getmDJZQDM() {
-        return mDJZQDM;
-    }
-
-    public String getmDJZQMC() {
-        return mDJZQMC;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setmDJZQDM(String mDJZQDM) {
-        this.mDJZQDM = mDJZQDM;
-    }
-
-    public void setmDJZQMC(String mDJZQMC) {
-        this.mDJZQMC = mDJZQMC;
+    public void setZjds(List<ZJD> zjds) {
+        this.zjds = zjds;
     }
 
     @Override
     public String toString() {
         return "XZDM{" +
                 "id=" + id +
-                ", mDJZQDM='" + mDJZQDM + '\'' +
-                ", mDJZQMC='" + mDJZQMC + '\'' +
+                ", DJZQDM='" + DJZQDM + '\'' +
+                ", DJZQMC='" + DJZQMC + '\'' +
                 '}';
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDJZQDM() {
+        return DJZQDM;
+    }
+
+    public void setDJZQDM(String DJZQDM) {
+        this.DJZQDM = DJZQDM;
+    }
+
+    public String getDJZQMC() {
+        return DJZQMC;
+    }
+
+    public void setDJZQMC(String DJZQMC) {
+        this.DJZQMC = DJZQMC;
     }
 }

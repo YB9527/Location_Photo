@@ -43,7 +43,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="清除地图状态" />
-
+        <Button
+            android:id="@+id/btuFinish"
+            android:layout_below="@id/addNotesPoint"
+            android:layout_toRightOf="@id/clearMapState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="完成" />
+        <Button
+            android:id="@+id/test"
+            android:layout_below="@id/addNotesPoint"
+            android:layout_toRightOf="@id/btuFinish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="c测试" />
 
         <com.esri.android.map.MapView
             android:id="@+id/map"

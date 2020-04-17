@@ -2,6 +2,7 @@ package com.xp.zjd.po;
 
 import com.google.gson.annotations.Expose;
 import com.xp.common.Photo;
+import com.xp.usermanager.po.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,12 +20,18 @@ public class ZJD {
     @Expose
     private boolean isSelectNative;
     @Expose
-    private String mDKBM;
+    private String ZDNUM;
     @Expose
-    private String mDKMC;
+    private String QUANLI;
     @Expose
     private List<Photo> photos;
+    @Expose
+    private User user;
 
+    public ZJD(String ZDNUM, String QUANLI) {
+        this.ZDNUM = ZDNUM;
+        this.QUANLI = QUANLI;
+    }
 
     public ZJD() {
 
@@ -46,29 +53,23 @@ public class ZJD {
         this.id = id;
     }
 
-    public ZJD(String mDKBM, String mDKMC) {
-        this.mDKBM = mDKBM;
-        this.mDKMC = mDKMC;
-    }
-
-
-    public String getmDKBM() {
-        if (mDKBM == null) {
-            return "";
+    public String getZDNUM() {
+        if(ZDNUM == null){
+            ZDNUM = "";
         }
-        return mDKBM;
+        return ZDNUM;
     }
 
-    public String getmDKMC() {
-        return mDKMC;
+    public void setZDNUM(String ZDNUM) {
+        this.ZDNUM = ZDNUM;
     }
 
-    public void setmDKBM(String mDKBM) {
-        this.mDKBM = mDKBM;
+    public String getQUANLI() {
+        return QUANLI;
     }
 
-    public void setmDKMC(String mDKMC) {
-        this.mDKMC = mDKMC;
+    public void setQUANLI(String QUANLI) {
+        this.QUANLI = QUANLI;
     }
 
     public List<Photo> getPhotos() {
@@ -85,14 +86,14 @@ public class ZJD {
     public boolean equals(Object obj) {
         if (obj instanceof ZJD) {
             ZJD zjd = (ZJD) obj;
-            return (getmDKBM().equals(zjd.getmDKBM()));
+            return (getZDNUM().equals(zjd.getZDNUM()));
         }
         return super.equals(obj);
     }
 
     public int hashCode() {//hashCode主要是用来提高hash系统的查询效率。当hashCode中不进行任何操作时，可以直接让其返回 一常数，或者不进行重写。
-        int result = getmDKBM().hashCode();
-        result = 29 * result + getmDKBM().hashCode();
+        int result = getZDNUM().hashCode();
+        result = 29 * result + getZDNUM().hashCode();
         return result;
     }
 
@@ -101,8 +102,8 @@ public class ZJD {
         return "{" +
                 "id=" + id +
                 ", isSelectNative=" + isSelectNative +
-                ", mDKBM='" + mDKBM + '\'' +
-                ", mDKMC='" + mDKMC + '\'' +
+                ", ZDNUM='" + ZDNUM + '\'' +
+                ", QUANLI='" + QUANLI + '\'' +
                 '}';
     }
 }

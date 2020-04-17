@@ -1,7 +1,10 @@
 package com.xp.common;
 
 
+import android.annotation.TargetApi;
+import android.icu.text.SimpleDateFormat;
 import android.os.Build;
+import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 
@@ -11,7 +14,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.util.Date;
 
 /**
  * 文件处理工具类
@@ -191,5 +201,31 @@ boolean bl = (filePath == null|| filePath.trim() == "")?false:new File(filePath)
             } catch (IOException e) {
             }
         }
+    }
+
+    /**
+     * 获取文件的创建日期  "yyyy-MM-dd HH-mm-ss"
+     * @param file
+     * @return
+     */
+    public static String getCreateDate(File file) {
+        return getCreateDate(file.getAbsolutePath());
+    }
+    /**
+     * 获取文件的创建日期  "yyyy-MM-dd HH-mm-ss"
+     * @param path
+     * @return
+     */
+    @TargetApi(Build.VERSION_CODES.O)
+    private static String getCreateDate(String path) {
+        try {
+            FileTime t=Files.readAttributes(Paths.get(path), BasicFileAttributes.class).creationTime();
+            long millis =  t.toMillis();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//24小时制
+            return simpleDateFormat.format(new Date(millis));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return  "";
     }
 }

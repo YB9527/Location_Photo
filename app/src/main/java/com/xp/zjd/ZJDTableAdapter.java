@@ -79,8 +79,8 @@ public class ZJDTableAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         ZJD zjd = datas.get(position);
-        viewHolder.tv_dkbm.setText(zjd.getmDKBM());
-        viewHolder.tv_dkmc.setText(zjd.getmDKMC());
+        viewHolder.tv_dkbm.setText(zjd.getZDNUM());
+        viewHolder.tv_dkmc.setText(zjd.getQUANLI());
 
         //没有 查找过时，才去查找本地
         if(!zjd.isSelectNative()){

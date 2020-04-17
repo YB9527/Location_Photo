@@ -13,6 +13,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,24 +24,38 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.xp.MainActivity;
 import com.xp.R;
 import com.xp.common.AndroidTool;
+import com.xp.common.JSONUtils;
+import com.xp.common.OkHttpClientUtils;
+import com.xp.common.Tool;
 import com.xp.zjd.photo.PhotosFragment;
 import com.xp.zjd.po.ZJD;
+import com.xp.zjd.service.ZJDService;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
+
 public class ZJDDialog extends DialogFragment {
 
-    private List<Map<String, Object>> dksMap;
+    private List<ZJD> zjds;
     private  int currentIndex = 0 ;
-    public static ZJDDialog newInstance(List<Map<String, Object>> dksMap) {
+    private ProgressBar progressBar;
+    public static ZJDDialog newInstance(List<ZJD> zjds) {
 
         Bundle args = new Bundle();
         ZJDDialog fragment = new ZJDDialog();
         fragment.setArguments(args);
-        fragment.dksMap = dksMap;
+        fragment.zjds = zjds;
 
         return fragment;
     }
@@ -97,20 +112,20 @@ public class ZJDDialog extends DialogFragment {
     }*/
 
     private void initButton() {
+        progressBar = view.findViewById(R.id.wait);
         final Button btuNext =view. findViewById(R.id.btunext);
         final Button btuLast = view.findViewById(R.id.btulast);
         btuNext.setEnabled(false);
         btuLast.setEnabled(true);
-        if(dksMap.size() == 1){
+        if(zjds.size() == 1){
             btuNext.setVisibility(View.GONE);
             btuLast.setVisibility(View.GONE);
         }else{
             btuNext.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-                    AndroidTool.replaceFrameLayout(R.id.framelayoutdk,new PhotosFragment());
-                        if(currentIndex+1 >=  dksMap.size()){
+                    //AndroidTool.replaceFrameLayout(R.id.framelayoutdk,new PhotosFragment(zjd));
+                        if(currentIndex+1 >=  zjds.size()){
                             btuNext.setEnabled(false);
                         }else{
                             btuNext.setEnabled(true);
@@ -134,21 +149,42 @@ public class ZJDDialog extends DialogFragment {
 
     private void lookdk(int i) {
 
-        Map<String,Object> dkMap = this.dksMap.get(i);
+        progressBar.setVisibility(View.VISIBLE);
+        ZJD zjd = this.zjds.get(i);
+        OkHttpClientUtils.httpGet(ZJDService.getURLBasic() + "findbyzdnum?ZDNUM=" + 2, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
 
-        PhotosFragment photosFragment = new PhotosFragment();
-        List<Fragment> list =  getFragmentManager().getFragments();
-        for (Fragment fragment: list
-             ) {
-            if(fragment instanceof  DialogFragment){
-                FragmentManager fragmentManager =fragment.getChildFragmentManager();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.framelayoutdk, photosFragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
-                break;
             }
-        }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                String reponseStr = response.body().string();
+
+                ZJD zjd =  Tool.getGson().fromJson(reponseStr,ZJD.class);
+                PhotosFragment photosFragment = new PhotosFragment(zjd);
+
+                List<Fragment> list =  getFragmentManager().getFragments();
+                for (Fragment fragment: list
+                ) {
+                    if(fragment instanceof  DialogFragment){
+                        FragmentManager fragmentManager =fragment.getChildFragmentManager();
+                        FragmentTransaction transaction = fragmentManager.beginTransaction();
+                        transaction.replace(R.id.framelayoutdk, photosFragment);
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+
+                        break;
+                    }
+                }
+                AndroidTool.getMainActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
+            }
+        });
 
     }
 

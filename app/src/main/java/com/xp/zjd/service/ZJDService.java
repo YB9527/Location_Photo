@@ -50,6 +50,13 @@ public class ZJDService {
 
 
     /**
+     *
+     * @return 储存离线数据库的文件夹
+     */
+    public static  String getTPKsDir(){
+        return     zjdDirRoot+"tpks/";
+    }
+    /**
      * 上传所有照片
      *
      * @param photos 需要上传的照片
@@ -62,7 +69,7 @@ public class ZJDService {
         for (Photo photo :
                 photos) {
             String path = photo.getPath();
-            body.addFormDataPart(path, photo.getZjd().getmDKBM(), RequestBody.create(MEDIA_TYPE_MARKDOWN, new File(path)));
+            body.addFormDataPart(path, photo.getZjd().getZDNUM(), RequestBody.create(MEDIA_TYPE_MARKDOWN, new File(path)));
         }
         RequestBody requestBody = body.build();
 
@@ -75,15 +82,23 @@ public class ZJDService {
     }
 
     /**
+     * 得到宅基地的 离线数据库  文件夹
+     *
+     * @return
+     */
+    public static String getGeodatabaseDir() {
+        String path = zjdDirRoot + "gdbs/" ;
+        return path;
+    }
+    /**
      * 得到宅基地的 离线数据库
      *
      * @return
      */
     public static String getGeodatabasePath() {
-        String path = zjdDirRoot + "gdbs/" + zjdGeodatabaseName;
+        String path = getGeodatabaseDir()+ zjdGeodatabaseName;
         return path;
     }
-
     /**
      *
      * @param isdownload  true 不管有无都重新下载geodatabase ，false 是 有才下载

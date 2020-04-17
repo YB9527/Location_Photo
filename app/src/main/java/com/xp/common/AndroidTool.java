@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -26,7 +27,7 @@ import com.xp.R;
 public class AndroidTool {
 
     private static AppCompatActivity activity;
-
+    private static ProgressBar pb_wait;
     /**
      * 页面必须要注入进来，才能使用里面的功能
      *
@@ -35,6 +36,37 @@ public class AndroidTool {
     public static void setMainActivity(AppCompatActivity activity) {
         AndroidTool.activity = activity;
     }
+    public static void setProgressBar(ProgressBar pb_wait) {
+        AndroidTool.pb_wait =pb_wait;
+
+    }
+
+    /**
+     * 显示等待 圈
+     */
+    public static void showProgressBar() {
+        getMainActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                pb_wait.setVisibility(View.VISIBLE);
+            }
+        });
+
+    }
+
+    /**
+     * 关闭 等待圈
+     */
+    public static void closeProgressBar() {
+        getMainActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                pb_wait.setVisibility(View.GONE);
+            }
+        });
+
+    }
+
 
     public static AppCompatActivity getMainActivity() {
         return activity;
@@ -107,6 +139,8 @@ public class AndroidTool {
             }
         });
     }
+
+
 
 
 }

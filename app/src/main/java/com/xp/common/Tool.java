@@ -37,9 +37,19 @@ public class Tool {
      * @param list
      * @return
      */
-    public static boolean IsEmpty(List list) {
+    public static boolean isEmpty(List list) {
         return list == null || list.isEmpty() ? true : false;
     }
+
+    /**
+     * 检查 字符串 是否为空
+     * @param str
+     * @return
+     */
+    public static boolean isEmpty(String str) {
+        return str == null ? true:str.isEmpty();
+    }
+
 
     private static AsyncHttpClient client = null;
 
@@ -62,7 +72,7 @@ public class Tool {
      * @return
      */
     public static String getHostAddress() {
-        String hostAddress = "http://192.168.2.183:8080/";
+        String hostAddress = "http://192.168.3.3:8080/";
         return hostAddress;
     }
 
@@ -198,7 +208,7 @@ public class Tool {
      * @param <T>
      * @return
      */
-    public static<T> T CopyObject(T obj) {
+    public static<T> T copyObject(T obj) {
         Gson gson = getGson();
         String json = gson.toJson(obj);
         return (T) gson.fromJson(json,obj.getClass());

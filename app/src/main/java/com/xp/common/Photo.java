@@ -20,11 +20,16 @@ public class Photo {
     private Integer id;
     @Expose
     private Boolean isUpload;
+
+    /**
+     * 拍照事件
+     */
+    @Expose
+    private String createDate;
     private ZJD zjd;
     /**
      * 是否已经上传文件
      */
-
 
     public Photo(String path,boolean isUpload) {
         setPath(path);

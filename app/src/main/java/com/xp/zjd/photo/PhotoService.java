@@ -23,21 +23,21 @@ public class PhotoService {
     }
 
     public static String getDKDownLoadUrlPath(ZJD zjd, Photo photo) {
-        String urlPath = imageBootUrl + "/zjdphotodowload?dkbm=" + zjd.getmDKBM() + "&photoname=" + photo.getName();
+        String urlPath = imageBootUrl + "/zjdphotodowload?ZDNUM=" + zjd.getZDNUM() + "&photoname=" + photo.getName();
         return urlPath;
     }
     public static String getDKUpLoadUrlPath(ZJD zjd, Photo photo) {
-        String urlPath = imageBootUrl + "/zjdphotoupload?dkbm=" + zjd.getmDKBM() + "&photoname=" + photo.getName();
+        String urlPath = imageBootUrl + "/zjdphotoupload?ZDNUM=" + zjd.getZDNUM() + "&photoname=" + photo.getName();
         return urlPath;
     }
 
     public static String getNativDKPhoto(ZJD zjd, Photo photo) {
-        String path = dirRoot + "zjdphoto/" + zjd.getmDKBM() + "/" + FileTool.getFileName(photo.getPath());
+        String path = dirRoot + "zjdphoto/" + zjd.getZDNUM() + "/" + FileTool.getFileName(photo.getPath());
         return path;
     }
 
     public static String getSaveDKPhotoPath(String srcPath, String fileName, ZJD zjd) {
-        String desc =getDKPhotoDir() + "" + zjd.getmDKBM() + "/" + fileName + "." + FileTool.getExtension(srcPath);
+        String desc =getDKPhotoDir() + "" + zjd.getZDNUM() + "/" + fileName + "." + FileTool.getExtension(srcPath);
         return desc;
     }
     /**
@@ -85,7 +85,7 @@ public class PhotoService {
     public static List<Photo> findUnUpLoadPhotos(ZJD zjd) {
         List<Photo> unUploadPhotos = new ArrayList<>();
         zjd.setSelectNative(true);
-        File[] files = new File(getDKPhotoDir(zjd.getmDKBM())).listFiles();
+        File[] files = new File(getDKPhotoDir(zjd.getZDNUM())).listFiles();
         List<Photo> photos = zjd.getPhotos();
         if(files != null){
             for (File file : files
