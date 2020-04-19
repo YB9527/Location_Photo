@@ -1,8 +1,6 @@
 package com.xp.zjd.fragments;
 
 import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -12,30 +10,23 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StyleRes;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.xp.MainActivity;
 import com.xp.R;
-import com.xp.common.AndroidTool;
-import com.xp.common.JSONUtils;
-import com.xp.common.OkHttpClientUtils;
-import com.xp.common.Tool;
+import com.xp.common.tools.AndroidTool;
+import com.xp.common.tools.OkHttpClientUtils;
+import com.xp.common.tools.Tool;
 import com.xp.zjd.photo.PhotosFragment;
 import com.xp.zjd.po.ZJD;
 import com.xp.zjd.service.ZJDService;
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
@@ -193,6 +184,7 @@ public class ZJDDialog extends DialogFragment {
      * @param dksMap
      */
     private void setDKs(List<Map<String, Object>> dksMap) {
+
     }
 
 }

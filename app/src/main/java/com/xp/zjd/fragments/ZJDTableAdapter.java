@@ -1,4 +1,4 @@
-package com.xp.zjd;
+package com.xp.zjd.fragments;
 
 import android.content.Context;
 
@@ -13,7 +13,7 @@ import com.xp.R;
 import com.xp.zjd.photo.PhotoService;
 import com.xp.zjd.photo.PhotosFragment;
 import com.xp.zjd.po.ZJD;
-import com.xp.common.AndroidTool;
+import com.xp.common.tools.AndroidTool;
 
 
 import java.util.ArrayList;

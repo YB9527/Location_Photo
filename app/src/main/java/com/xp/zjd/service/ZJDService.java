@@ -1,23 +1,17 @@
 package com.xp.zjd.service;
 
-import android.os.FileUtils;
-
-import com.xp.common.AndroidTool;
-import com.xp.common.FileTool;
-import com.xp.common.OkHttpClientUtils;
-import com.xp.common.Photo;
-import com.xp.common.Tool;
+import com.xp.common.tools.AndroidTool;
+import com.xp.common.tools.FileTool;
+import com.xp.common.tools.OkHttpClientUtils;
+import com.xp.common.tools.Photo;
+import com.xp.common.tools.Tool;
 import com.xp.zjd.photo.PhotoService;
-import com.xp.zjd.po.ZJD;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;

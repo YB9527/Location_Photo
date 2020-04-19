@@ -1,4 +1,4 @@
-package com.xp;
+package com.xp.zjd.init;
 
 
 import android.net.Uri;
@@ -28,10 +28,16 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.xp.R;
+
+import com.xp.common.fragment.TDTFragment;
+import com.xp.common.tools.RedisTool;
+import com.xp.common.tools.Tool;
+import com.xp.usermanager.po.User;
 import com.xp.usermanager.service.UserService;
 import com.xp.xzqy.fragments.XZDMFragment;
-import com.xp.zjd.ZJDFragment;
-import com.xp.common.AndroidTool;
+import com.xp.zjd.fragments.ZJDFragment;
+import com.xp.common.tools.AndroidTool;
 import com.xp.menu.SetingsFragment;
 import com.xp.zjd.fragments.MapSetting;
 import com.xp.zjd.fragments.ZJDArcgisMap;
@@ -72,20 +78,24 @@ public class MainActivity extends AppCompatActivity
 
     private void init() {
 
-        frameLayout = (FrameLayout) findViewById(R.id.framelayout_content);
-        InitFragment initFragment = new InitFragment();
 
+        frameLayout = (FrameLayout) findViewById(R.id.framelayout_content);
         ///将页面注入到 AndroidTool
         AndroidTool.setMainActivity(this);
         ProgressBar pb_wait = findViewById(R.id.pb_wait);
         AndroidTool.setProgressBar(pb_wait);
-        AndroidTool.replaceFrameLayout(initFragment);
 
 
-
+        //检查账号是否登录
+        String redisUser = RedisTool.findRedis(UserService.redisLoginUser);
+        User user = Tool.JsonToObject(redisUser, User.class);
+        UserService.checkIfLogin(user);
 
         //如果 无离线数据库
         ZJDService.downloadGeodatase(true);
+
+
+
 
     }
 
@@ -151,6 +161,7 @@ public class MainActivity extends AppCompatActivity
                 AndroidTool.replaceFrameLayout(new InitFragment());
                 break;
             case R.id.map_item:
+                AndroidTool.replaceFrameLayout(new TDTFragment());
                 break;
             case R.id.zjd_arcgismap_item:
                 AndroidTool.replaceFrameLayout(new ZJDArcgisMap());
@@ -162,20 +173,9 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private Button btn_camera;
-    private ImageView imageView;
-
-    private Button choose_photo;
-
-    public static final int PICK_PHOTO = 102;
 
 
-    public static final int TAKE_CAMERA = 101;
-    private Uri imageUri;
 
-    public void aa(View view) {
-
-    }
 
 
 }

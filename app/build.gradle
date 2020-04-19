@@ -42,10 +42,8 @@ dependencies {
     implementation files('libs/httpcore-4.2.4.jar')
     implementation files('libs/httpmime-4.2.5.jar')
     implementation 'com.google.code.gson:gson:2.7'
-
-
-    implementation("com.squareup.okhttp3:okhttp:4.3.1")
-
+    implementation 'com.squareup.okhttp3:okhttp:4.3.1'
     implementation 'com.esri.arcgis.android:arcgis-android:10.2.9'
     implementation 'com.android.support:multidex:1.0.3'
+    implementation files('libs/tiandituapi3.0.jar')
 }

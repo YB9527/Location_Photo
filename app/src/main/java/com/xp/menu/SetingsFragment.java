@@ -1,14 +1,11 @@
 package com.xp.menu;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,26 +14,20 @@ import androidx.fragment.app.Fragment;
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.FileAsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.loopj.android.image.SmartImageView;
 import com.xp.R;
-import com.xp.common.AndroidTool;
-import com.xp.common.Photo;
-import com.xp.common.Tool;
+import com.xp.common.tools.AndroidTool;
+import com.xp.common.tools.Photo;
+import com.xp.common.tools.Tool;
 
 import org.apache.http.Header;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
-import org.json.JSONObject;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 全局设置界面

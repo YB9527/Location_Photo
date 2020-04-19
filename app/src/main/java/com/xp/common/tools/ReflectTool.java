@@ -1,10 +1,6 @@
-package com.xp.common;
-
-import android.widget.Toast;
+package com.xp.common.tools;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

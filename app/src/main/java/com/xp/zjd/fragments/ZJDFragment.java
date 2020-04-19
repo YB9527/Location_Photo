@@ -1,15 +1,12 @@
-package com.xp.zjd;
+package com.xp.zjd.fragments;
 
 
 import android.app.Activity;
 import android.content.DialogInterface;
-import android.net.wifi.aware.IdentityChangedListener;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -23,19 +20,19 @@ import androidx.fragment.app.Fragment;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import com.xp.MainActivity;
 import com.xp.R;
-import com.xp.common.AndroidTool;
-import com.xp.common.OkHttpClientUtils;
-import com.xp.common.Photo;
-import com.xp.common.Tool;
+import com.xp.common.po.ResultData;
+import com.xp.common.po.Status;
+import com.xp.common.tools.AndroidTool;
+import com.xp.common.tools.OkHttpClientUtils;
+import com.xp.common.tools.Photo;
+import com.xp.common.tools.Tool;
 import com.xp.zjd.photo.PhotoService;
 import com.xp.zjd.po.ZJD;
 import com.xp.zjd.service.ZJDService;
 
 
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -80,45 +77,32 @@ public class ZJDFragment extends Fragment implements View.OnClickListener {
     }
 
     public ZJDTableAdapter getAdapter(View view) {
+        AndroidTool.showProgressBar();
         final ZJDTableAdapter adapter = new ZJDTableAdapter(view.getContext());
-       /* final List<ZJD> zjds = new ArrayList<ZJD>();
-        for (int i = 0; i < 5; i++) {
-            ZJD zjd = new ZJD(i + "", "hello YB  " + i);
-            zjd.setId(i);
-            zjds.add(zjd);
-            Photo photo = new Photo(PhotoService.dirRoot+"dkphoto/"+ zjd.getmDKBM()+"/timg.jpg",true);
-           List<Photo> photos = new ArrayList<>();
-           photos.add(photo);
-            zjd.setPhotos(photos);
-        }*/
 
-        OkHttpClient client = OkHttpClientUtils.getClient();
-        Request request = new Request.Builder().get().url(ZJDService.getURLBasic() + "findall").build();
-        Call call = client.newCall(request);
-
-        //异步调用并设置回调函数
-        call.enqueue(new Callback() {
+        OkHttpClientUtils.httpPostAndDJZQDM(ZJDService.getURLBasic() + "findbydjzqdm", new Callback() {
             @Override
-            public void onFailure(Call call, IOException e) {
-
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+               OkHttpClientUtils.connetOutTime("查找地块");
             }
 
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
-
-
-                Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation()
-                        .create();
-
-                final String responseStr = response.body().string();
-                final List<ZJD> zjds = gson.fromJson(responseStr, new TypeToken<List<ZJD>>() {}.getType());
-
-                AndroidTool.getMainActivity().runOnUiThread(new Runnable() {  //回到UI主线程
-                    @Override
-                    public void run() {
-                        adapter.addDatas(zjds);
-                    }
-                });
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                final ResultData resultData = OkHttpClientUtils.resposeToResultData(response,new TypeToken<List<ZJD>>() {}.getType());
+                if(resultData != null && resultData.getObject() !=null){
+                    AndroidTool.getMainActivity().runOnUiThread(new Runnable() {  //回到UI主线程
+                        @Override
+                        public void run() {
+                            if(((List<ZJD>)resultData.getObject()).size() == 0){
+                                AndroidTool.showAnsyTost("没有找到宅基地，可以重新选择行政区域", Status.Other);
+                            }
+                            adapter.addDatas((List<ZJD>)resultData.getObject());
+                        }
+                    });
+                }else{
+                    AndroidTool.showAnsyTost("没有找到宅基地，可以重新选择行政区域");
+                }
+                AndroidTool.closeProgressBar();
             }
         });
 

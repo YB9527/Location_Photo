@@ -1,4 +1,4 @@
-package com.xp.common;
+package com.xp.common.tools;
 
 import java.lang.reflect.Field;
 

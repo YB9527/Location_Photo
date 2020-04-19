@@ -5,20 +5,40 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.gson.reflect.TypeToken;
 import com.xp.R;
+import com.xp.common.po.Redis;
+import com.xp.common.po.Status;
+import com.xp.common.tools.AndroidTool;
+import com.xp.common.tools.RedisTool;
+import com.xp.common.tools.Tool;
+import com.xp.zjd.po.FileSelect;
 import com.xp.zjd.service.ZJDService;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * map 设定页面
  */
 public class MapSetting extends Fragment implements View.OnClickListener {
     private View view;
+    private String redisMapTileSetting = "mapTileSetting";
+    private String redisMapGeodatabaseSetting = "mapGeodatabaseSetting";
+    private static String redisMapLoadTDT = "mapLoadTDT";
+    public static  Boolean isLoadTDT ;
+    private CheckBox cb_loadTDT;
+    public static void findRedisLoadTDT() {
+        isLoadTDT = RedisTool.findRedis(redisMapLoadTDT,Boolean.class);
+        if(isLoadTDT == null){
+            isLoadTDT = false;
+        }
+    }
 
     @Nullable
     @Override
@@ -31,16 +51,27 @@ public class MapSetting extends Fragment implements View.OnClickListener {
         return view;
     }
 
+    TileSelect tileSelect;
+    GeodatabaseSelect geodatabaseSelect;
+
     private void init() {
 
-        TileSelect tileSelect = new TileSelect(view);
-        GeodatabaseSelect geodatabaseSelect = new GeodatabaseSelect(view);
+        //查找本地数据中的记录
+        List<FileSelect> tileFileSelected = RedisTool.findRedis(redisMapTileSetting,new TypeToken<List<FileSelect>>(){}.getType());
+        tileSelect = new TileSelect(view,tileFileSelected);
+        List<FileSelect> geodatabaseFileSelected = RedisTool.findRedis(redisMapGeodatabaseSetting,new TypeToken<List<FileSelect>>(){}.getType());
+        geodatabaseSelect = new GeodatabaseSelect(view,geodatabaseFileSelected);
 
         Button btu_downloadgeodatabase = view.findViewById(R.id.btu_downloadgeodatabase);
         btu_downloadgeodatabase.setOnClickListener(this);
 
         Button btu_submit = view.findViewById(R.id.btu_submit);
         btu_submit.setOnClickListener(this);
+
+        findRedisLoadTDT();
+        cb_loadTDT = view.findViewById(R.id.cb_loadTDT);
+        cb_loadTDT.setChecked(isLoadTDT);
+        cb_loadTDT.setOnClickListener(this);
     }
 
     @Override
@@ -52,16 +83,34 @@ public class MapSetting extends Fragment implements View.OnClickListener {
             case R.id.btu_submit:
                 btu_submit();
                 break;
+            case R.id.cb_loadTDT:
+                loadTDT((CheckBox)v);
+                break;
             default:
                 break;
         }
     }
 
     /**
-     * 地图设置 提交修改
+     * 点击 “加载天地图”  checkbox 事件
+     * @param cb_loadTDT
+     */
+    private void loadTDT(CheckBox cb_loadTDT) {
+
+
+    }
+
+    /**
+     * 地图设置 提交修改 ,保存到本地缓存
      */
     private void btu_submit() {
 
+        RedisTool.updateRedis(redisMapGeodatabaseSetting, FileSelect.getSelectedFile(geodatabaseSelect.fileSelects) );
+        RedisTool.updateRedis(redisMapTileSetting,FileSelect.getSelectedFile(tileSelect.fileSelects));
+        AndroidTool.showToast("保存成功", Status.Success);
+
+        isLoadTDT =  cb_loadTDT.isChecked();
+        RedisTool.updateRedis(redisMapLoadTDT,isLoadTDT);
     }
 
     /**

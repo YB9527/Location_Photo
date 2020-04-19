@@ -6,14 +6,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 
 import com.esri.android.map.FeatureLayer;
@@ -21,14 +17,10 @@ import com.esri.android.map.GraphicsLayer;
 import com.esri.android.map.Layer;
 import com.esri.android.map.MapView;
 import com.esri.android.map.ags.ArcGISLocalTiledLayer;
-import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.core.geodatabase.Geodatabase;
-import com.esri.core.geodatabase.GeodatabaseFeature;
 import com.esri.core.geodatabase.GeodatabaseFeatureTable;
 import com.esri.core.geometry.Envelope;
-import com.esri.core.geometry.GeometryEngine;
-import com.esri.core.geometry.MapGeometry;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.Polygon;
 import com.esri.core.geometry.Polyline;
@@ -43,21 +35,16 @@ import com.esri.core.symbol.SimpleMarkerSymbol;
 import com.esri.core.table.FeatureTable;
 import com.esri.core.tasks.SpatialRelationship;
 import com.esri.core.tasks.query.QueryParameters;
-import com.xp.MainActivity;
 import com.xp.R;
-import com.xp.common.AndroidTool;
-import com.xp.common.ArcgisTool;
-import com.xp.common.Tool;
-import com.xp.zjd.photo.PhotosFragment;
+import com.xp.common.tools.AndroidTool;
+import com.xp.common.tools.ArcgisTool;
+import com.xp.common.tools.Tool;
 import com.xp.zjd.po.MapListenerEnum;
 import com.xp.zjd.po.ZJD;
 import com.xp.zjd.service.ZJDService;
 
-import org.codehaus.jackson.JsonFactory;
-
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

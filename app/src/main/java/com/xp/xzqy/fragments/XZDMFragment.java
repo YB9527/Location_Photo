@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 
 import androidx.annotation.Nullable;
@@ -12,28 +11,22 @@ import androidx.fragment.app.Fragment;
 
 import com.google.gson.reflect.TypeToken;
 import com.xp.R;
-import com.xp.common.AndroidTool;
-import com.xp.common.OkHttpClientUtils;
-import com.xp.common.RedisTool;
-import com.xp.common.ReflectTool;
-import com.xp.common.Tool;
+import com.xp.common.tools.AndroidTool;
+import com.xp.common.tools.OkHttpClientUtils;
+import com.xp.common.tools.RedisTool;
+import com.xp.common.tools.ReflectTool;
 import com.xp.common.po.ResultData;
 import com.xp.common.po.Status;
 import com.xp.xzqy.po.XZDM;
 import com.xp.xzqy.po.XZDMVo;
 import com.xp.xzqy.service.XZDMService;
-import com.xp.zjd.fragments.GeodatabaseSelect;
-import com.xp.zjd.fragments.TileSelect;
-import com.xp.zjd.po.ZJD;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -64,14 +57,14 @@ public class XZDMFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                ResultData resultData = OkHttpClientUtils.ResposeToResultData(response, new TypeToken<List<XZDM>>() {
+                ResultData resultData = OkHttpClientUtils.resposeToResultData(response, new TypeToken<List<XZDM>>() {
                 }.getType());
 
                 Object objXZDMs = resultData.getObject();
                 if (objXZDMs != null) {
                     final List<XZDM> xzdms = (List<XZDM>) objXZDMs;
 
-                    OkHttpClientUtils.httpGet(RedisTool.getFindRedisURL(XZDMService.selectXZDMRedis), new Callback() {
+                    OkHttpClientUtils.httpGet(RedisTool.getFindSelectDJZQDMSRedisURL(XZDMService.selectXZDMRedis), new Callback() {
                         @Override
                         public void onFailure(@NotNull Call call, @NotNull IOException e) {
                             AndroidTool.closeProgressBar();
@@ -80,7 +73,7 @@ public class XZDMFragment extends Fragment implements View.OnClickListener {
                         @Override
                         public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
 
-                            ResultData resultData = OkHttpClientUtils.ResposeToResultData(response, new TypeToken<List<String>>() {
+                            ResultData resultData = OkHttpClientUtils.resposeToResultData(response, new TypeToken<List<String>>() {
                             }.getType());
                             if (resultData.getStatus() == Status.Error) {
                                 AndroidTool.showAnsyTost(resultData.getMessage());

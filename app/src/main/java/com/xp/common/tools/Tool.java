@@ -1,8 +1,4 @@
-package com.xp.common;
-
-import android.app.DownloadManager;
-import android.preference.PreferenceActivity;
-import android.widget.Toast;
+package com.xp.common.tools;
 
 
 import com.google.gson.Gson;
@@ -12,18 +8,15 @@ import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import org.apache.http.Header;
-import org.apache.http.client.HttpClient;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URL;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * 一般工具类
@@ -43,11 +36,12 @@ public class Tool {
 
     /**
      * 检查 字符串 是否为空
+     *
      * @param str
      * @return
      */
     public static boolean isEmpty(String str) {
-        return str == null ? true:str.isEmpty();
+        return str == null ? true : str.isEmpty();
     }
 
 
@@ -72,7 +66,7 @@ public class Tool {
      * @return
      */
     public static String getHostAddress() {
-        String hostAddress = "http://192.168.2.183:8080/";
+        String hostAddress = "http://192.168.3.3:8080/";
         return hostAddress;
     }
 
@@ -192,34 +186,59 @@ public class Tool {
 
     /**
      * 得到 只处理 @Expose json对象
+     *
      * @return
      */
-    public static Gson getGson(){
-        if(gson == null){
+    public static Gson getGson() {
+        if (gson == null) {
             gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation()
                     .create();
         }
-        return  gson;
+        return gson;
     }
 
     /**
      * 使用json功能复制对象
+     *
      * @param obj
      * @param <T>
      * @return
      */
-    public static<T> T copyObject(T obj) {
+    public static <T> T copyObject(T obj) {
         Gson gson = getGson();
         String json = gson.toJson(obj);
-        return (T) gson.fromJson(json,obj.getClass());
+        return (T) gson.fromJson(json, obj.getClass());
     }
 
     /**
      * 检查 bool 是否为 true ，null是返回 false
+     *
      * @param bool
      * @return
      */
     public static boolean isTrue(Boolean bool) {
-        return bool == null? false:bool;
+        return bool == null ? false : bool;
+    }
+
+    /** json 转为 对象
+     * @param json
+     * @param type
+     * @return
+     */
+    public static <T> T JsonToObject(String json, Type type) {
+        if(isEmpty(json)){
+            return  null;
+        }
+        T t = getGson().fromJson(json,type);
+        return t;
+    }
+
+    /**
+     *  对象转换为json
+     * @param obj
+     * @return
+     */
+    public static  String objectToJson(Object obj){
+        return getGson().toJson(obj);
     }
 }

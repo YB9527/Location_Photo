@@ -5,21 +5,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,28 +24,21 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BinaryHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.TextHttpResponseHandler;
 import com.loopj.android.image.SmartImage;
 import com.loopj.android.image.SmartImageView;
-import com.xp.MainActivity;
 import com.xp.R;
-import com.xp.common.ImageViewTouch;
-import com.xp.common.OkHttpClientUtils;
+import com.xp.common.tools.ImageViewTouch;
+import com.xp.common.tools.OkHttpClientUtils;
 import com.xp.zjd.po.ZJD;
-import com.xp.common.AndroidTool;
-import com.xp.common.FileTool;
-import com.xp.common.Photo;
-import com.xp.common.Tool;
+import com.xp.common.tools.AndroidTool;
+import com.xp.common.tools.FileTool;
+import com.xp.common.tools.Photo;
+import com.xp.common.tools.Tool;
 
 import org.apache.http.Header;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,8 +48,6 @@ import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.Headers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -102,6 +88,7 @@ public class PhotosFragment extends Fragment {
         addphoto.setOnClickListener(new AddPhotoClickListener());
 
         TextView tv_zdnum = view.findViewById(R.id.tv_zdnum);
+
         tv_zdnum.setText(zjd.getZDNUM());
         TextView tv_quanli = view.findViewById(R.id.tv_quanli);
         tv_quanli.setText(zjd.getQUANLI());

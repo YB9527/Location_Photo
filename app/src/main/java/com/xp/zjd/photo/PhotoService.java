@@ -1,10 +1,10 @@
 package com.xp.zjd.photo;
 
 import com.xp.zjd.po.ZJD;
-import com.xp.common.AndroidTool;
-import com.xp.common.FileTool;
-import com.xp.common.Photo;
-import com.xp.common.Tool;
+import com.xp.common.tools.AndroidTool;
+import com.xp.common.tools.FileTool;
+import com.xp.common.tools.Photo;
+import com.xp.common.tools.Tool;
 
 import java.io.File;
 import java.util.ArrayList;

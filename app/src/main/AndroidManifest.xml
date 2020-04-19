@@ -13,8 +13,19 @@
     <uses-feature android:glEsVersion="0x00020000" android:required="true" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE">
+    </uses-permission>
+
+    <uses-permission android:name="android.permission.CALL_PHONE">
+    </uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION">
+    </uses-permission>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE">
+    </uses-permission>
+
+
     <application
-        android:name=".DemoApplication"
+        android:name=".zjd.init.DemoApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -26,7 +37,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".zjd.init.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -44,6 +55,9 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
+            <meta-data
+                android:name="com.tianditu.apikey"
+                android:value="b23fbe0ee1e8e76533866b75f9d5ed05" />
         </provider>
         <uses-library
             android:name="org.apache.http.legacy"

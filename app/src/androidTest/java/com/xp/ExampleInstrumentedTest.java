@@ -5,13 +5,6 @@ import android.content.Context;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnit4;
 
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.TextHttpResponseHandler;
-import com.xp.common.Photo;
-import com.xp.common.Tool;
-
-import org.apache.http.Header;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

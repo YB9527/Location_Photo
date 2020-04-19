@@ -1,4 +1,4 @@
-package com.xp;
+package com.xp.zjd.init;
 
 import android.app.Application;
 

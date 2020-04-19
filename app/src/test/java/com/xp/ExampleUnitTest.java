@@ -1,22 +1,9 @@
 package com.xp;
 
-import com.google.gson.Gson;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.ResponseHandlerInterface;
-import com.loopj.android.http.TextHttpResponseHandler;
-import com.xp.common.JSONUtils;
-import com.xp.common.Photo;
-import com.xp.common.Tool;
+import com.xp.common.tools.Photo;
 import com.xp.zjd.po.ZJD;
 
-import org.apache.http.Header;
-import org.json.JSONObject;
 import org.junit.Test;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.security.spec.ECField;
 
 import static org.junit.Assert.*;
 

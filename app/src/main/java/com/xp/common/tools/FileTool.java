@@ -1,12 +1,9 @@
-package com.xp.common;
+package com.xp.common.tools;
 
 
 import android.annotation.TargetApi;
 import android.icu.text.SimpleDateFormat;
 import android.os.Build;
-import android.widget.TextView;
-
-import androidx.annotation.RequiresApi;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,10 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.Date;
@@ -63,7 +57,6 @@ public class FileTool {
     }
 
     /**
-     *
      * @param path
      * @return 返回后缀名
      */
@@ -80,7 +73,6 @@ public class FileTool {
     }
 
     /**
-     *
      * @param path
      * @return 获取文件路径
      */
@@ -89,13 +81,15 @@ public class FileTool {
             return null;
         }
         int index = path.lastIndexOf("/");
-        if (index >0 ) {
-            return path.substring(0,index);
+        if (index > 0) {
+            return path.substring(0, index);
         }
         return null;
     }
+
     /**
      * 文件复制
+     *
      * @param source
      * @param dest
      * @return
@@ -105,7 +99,7 @@ public class FileTool {
         FileChannel output = null;
         try {
             File dir = new File(getDir(dest));
-            if(!dir.exists()){
+            if (!dir.exists()) {
                 dir.mkdirs();
             }
             input = new FileInputStream(new File(source)).getChannel();
@@ -114,31 +108,34 @@ public class FileTool {
         } catch (Exception e) {
             return false;
         }
-        return  true;
+        return true;
     }
 
     /**
      * 检查文件是否存在
+     *
      * @param filePath
      * @return
      */
     public static boolean exitFile(String filePath) {
-boolean bl = (filePath == null|| filePath.trim() == "")?false:new File(filePath).exists();
-        return  bl;
+        boolean bl = (filePath == null || filePath.trim() == "") ? false : new File(filePath).exists();
+        return bl;
 
     }
 
     /**
      * 删除文件
+     *
      * @param path
      */
     public static boolean deleteFile(String path) {
         File file = new File(path);
-        if(file.exists()){
-           return file.delete();
+        if (file.exists()) {
+            return file.delete();
         }
-        return  false;
+        return false;
     }
+
     /**
      * 检查文件夹是否存在
      *
@@ -156,6 +153,7 @@ boolean bl = (filePath == null|| filePath.trim() == "")?false:new File(filePath)
         }
         return false;
     }
+
     /**
      * 检查文件夹是否存在
      *
@@ -164,13 +162,14 @@ boolean bl = (filePath == null|| filePath.trim() == "")?false:new File(filePath)
      * @return
      */
     public static boolean exitsDir(String dir, boolean isCreated) {
-        File  f = new File(dir);
-        return  exitsDir(f,isCreated);
+        File f = new File(dir);
+        return exitsDir(f, isCreated);
     }
 
     /**
      * 保存文件
-     * @param is 数据流
+     *
+     * @param is       数据流
      * @param savePath 保存的位置
      */
     public static void saveFile(InputStream is, String savePath) {
@@ -205,27 +204,31 @@ boolean bl = (filePath == null|| filePath.trim() == "")?false:new File(filePath)
 
     /**
      * 获取文件的创建日期  "yyyy-MM-dd HH-mm-ss"
+     *
      * @param file
      * @return
      */
-    public static String getCreateDate(File file) {
+    public static Date getCreateDate(File file) {
         return getCreateDate(file.getAbsolutePath());
     }
+
     /**
      * 获取文件的创建日期  "yyyy-MM-dd HH-mm-ss"
+     *
      * @param path
      * @return
      */
     @TargetApi(Build.VERSION_CODES.O)
-    private static String getCreateDate(String path) {
+    private static  Date getCreateDate(String path) {
         try {
-            FileTime t=Files.readAttributes(Paths.get(path), BasicFileAttributes.class).creationTime();
-            long millis =  t.toMillis();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//24小时制
-            return simpleDateFormat.format(new Date(millis));
-        } catch (IOException e) {
+            FileTime t = Files.readAttributes(Paths.get(path), BasicFileAttributes.class).creationTime();
+            long millis = t.toMillis();
+            return new Date(millis);
+
+        } catch (Exception e) {
+            AndroidTool.showAnsyTost(e.getMessage());
             e.printStackTrace();
         }
-        return  "";
+        return null;
     }
 }

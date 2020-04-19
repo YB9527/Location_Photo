@@ -21,11 +21,17 @@
                 android:textStyle="italic"
                 android:typeface="monospace"
                 android:text="离线地图设置"  />
+            <CheckBox
+                android:id="@+id/cb_loadTDT"
+                android:text="加载天地图"
+                android:layout_gravity="right"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
            <ListView
                android:id="@+id/lv_tile"
                android:layout_marginTop="30dp"
                android:layout_width="match_parent"
-               android:layout_height="wrap_content"></ListView>
+               android:layout_height="wrap_content"/>
         </LinearLayout>
 
         <LinearLayout
@@ -46,6 +52,7 @@
                 android:layout_gravity="right"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="invisible"
                 android:text="下载远程数据库" />
             <ListView
                 android:id="@+id/lv_geodatabase"

@@ -11,24 +11,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xp.R;
-import com.xp.common.AndroidTool;
-import com.xp.common.FileTool;
-import com.xp.common.OkHttpClientUtils;
-import com.xp.common.RedisTool;
-import com.xp.common.Tool;
-import com.xp.xzqy.po.XZDM;
+import com.xp.common.tools.AndroidTool;
+import com.xp.common.tools.OkHttpClientUtils;
+import com.xp.common.tools.RedisTool;
+import com.xp.common.tools.Tool;
 import com.xp.xzqy.po.XZDMVo;
 import com.xp.xzqy.service.XZDMService;
-import com.xp.zjd.fragments.TileSelect;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -66,12 +60,13 @@ public class XZDMSelect implements View.OnClickListener {
      * @param xzdmVos
      */
     private void submit(List<XZDMVo> xzdmVos) {
-        List<String> selectXZDM = new ArrayList<>();
+        final List<String> selectXZDM = new ArrayList<>();
         for (XZDMVo xzdmVo: xzdmVos
              ) {
             if(Tool.isTrue(xzdmVo.getSelect())){
                 selectXZDM.add(xzdmVo.getXzdm().getDJZQDM());
             }
+
         }
 
         OkHttpClientUtils.httpPost(RedisTool.getUpdateRedisURL(XZDMService.selectXZDMRedis),"json", selectXZDM, new Callback() {
@@ -82,6 +77,7 @@ public class XZDMSelect implements View.OnClickListener {
 
             @Override
             public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                XZDMService.setSelectXZDMs(selectXZDM);
                 AndroidTool.showAnsyTost("保存 成功！！！");
             }
         });

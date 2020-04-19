@@ -7,22 +7,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xp.R;
-import com.xp.common.FileTool;
-import com.xp.zjd.ZJDTableAdapter;
-import com.xp.zjd.photo.PhotoService;
-import com.xp.zjd.po.ZJD;
+import com.xp.common.tools.DataTool;
+import com.xp.common.tools.FileTool;
+import com.xp.common.tools.ReflectTool;
+import com.xp.zjd.po.FileSelect;
+import com.xp.zjd.po.GeodatabaseFileSelect;
 import com.xp.zjd.service.ZJDService;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 数据库的选择
@@ -30,42 +31,53 @@ import java.util.List;
 public class GeodatabaseSelect {
 
     private View view;
-    private List<File> files;
+    public List<FileSelect> fileSelects;
+
     /**
-     *
      * @param view 地图设置页面
      */
-    public GeodatabaseSelect(View view) {
+    public GeodatabaseSelect(View view, List<FileSelect> geodatabaseFileSelected) {
         this.view = view;
-        files = new ArrayList<>();
-        init();
+        fileSelects = new ArrayList<>();
+        init(geodatabaseFileSelected);
 
     }
+
+
 
     /**
      * 先查找本地有哪些数据,如果时tpk 文件就添加
      */
-    private void init() {
+    private void init(List<FileSelect> geodatabaseFileSelected) {
         File geodatabaseDir = new File(ZJDService.getGeodatabaseDir());
-        if(geodatabaseDir.exists()){
-            File[] fileArray =   geodatabaseDir.listFiles(new FileFilter() {
+        Map<String, FileSelect> map = ReflectTool.getIDMap("getName", geodatabaseFileSelected);
+        if (geodatabaseDir.exists()) {
+            File[] fileArray = geodatabaseDir.listFiles(new FileFilter() {
                 @Override
                 public boolean accept(File pathname) {
-                    if("geodatabase".equals(FileTool.getExtension(pathname.getAbsolutePath()))){
-                        return  true;
+                    if ("geodatabase".equals(FileTool.getExtension(pathname.getAbsolutePath()))) {
+                        return true;
                     }
                     return false;
                 }
             });
             for (File file : fileArray
             ) {
-                files.add(file);
+                FileSelect fileSelect = GeodatabaseFileSelect.getInstance(file);
+                if (fileSelect != null) {
+                    if (map.containsKey(fileSelect.getName())){
+                        fileSelect.setIsselect(true);
+                    }
+                    fileSelects.add(fileSelect);
+                }
+
             }
         }
         TileSelectAdapter tileSelectAdapter = new TileSelectAdapter(view);
         ListView lv_tile = view.findViewById(R.id.lv_geodatabase);
         lv_tile.setAdapter(tileSelectAdapter);
     }
+
     private class ViewHolder {
         TextView tv_name;
         CheckBox cb_isselect;
@@ -73,22 +85,25 @@ public class GeodatabaseSelect {
         TextView tv_file_createdate;
 
     }
-    class  TileSelectAdapter extends BaseAdapter{
+
+    class TileSelectAdapter extends BaseAdapter {
 
         LayoutInflater layoutInflater;
         private Context context;
-        private TileSelectAdapter(View view){
-            context =  view.getContext();
+
+        private TileSelectAdapter(View view) {
+            context = view.getContext();
             this.layoutInflater = LayoutInflater.from(context);
         }
+
         @Override
         public int getCount() {
-            return  files.size();
+            return fileSelects.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return files.get(position);
+            return fileSelects.get(position);
         }
 
         @Override
@@ -97,6 +112,7 @@ public class GeodatabaseSelect {
         }
 
 
+        @TargetApi(Build.VERSION_CODES.N)
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
@@ -112,14 +128,21 @@ public class GeodatabaseSelect {
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
             }
-            File file = files.get(position);
+            FileSelect fileSelect = fileSelects.get(position);
+            viewHolder.tv_name.setText(fileSelect.getName());
+            viewHolder.cb_isselect.setChecked(fileSelect.getIsselect().booleanValue());
+            double size = fileSelect.getFileSize();
+            viewHolder.tv_file_size.setText(String.format("%.2f", size) + "M");
+            viewHolder.tv_file_createdate.setText(DataTool.dataFormat(fileSelect.getFileCreatedate()));
 
-            viewHolder.tv_name.setText(FileTool.getFileName(file.getAbsolutePath()));
-            viewHolder.cb_isselect.setChecked(true);
-            double size =  file.length()/1024/1024;
-
-            viewHolder.tv_file_size.setText(String.format("%.2f", size)+"M");
-            viewHolder.tv_file_createdate.setText(FileTool.getCreateDate(file));
+            viewHolder.cb_isselect.setTag(fileSelect);
+            viewHolder.cb_isselect.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FileSelect fileSelect = (FileSelect)v.getTag();
+                    fileSelect.setIsselect(!fileSelect.getIsselect());
+                }
+            });
 
             return convertView;
 

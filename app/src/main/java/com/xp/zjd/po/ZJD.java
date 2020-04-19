@@ -1,7 +1,7 @@
 package com.xp.zjd.po;
 
 import com.google.gson.annotations.Expose;
-import com.xp.common.Photo;
+import com.xp.common.tools.Photo;
 import com.xp.usermanager.po.User;
 
 import java.util.ArrayList;
@@ -65,6 +65,9 @@ public class ZJD {
     }
 
     public String getQUANLI() {
+        if(QUANLI == null){
+            QUANLI = "";
+        }
         return QUANLI;
     }
 

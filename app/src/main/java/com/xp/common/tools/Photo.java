@@ -1,10 +1,7 @@
-package com.xp.common;
+package com.xp.common.tools;
 
-import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import com.xp.zjd.po.ZJD;
-
-import java.io.File;
 
 /**
  * Created by Administrator on 2020/3/31.

@@ -1,22 +1,13 @@
-package com.xp.common;
-
-import android.widget.Toast;
+package com.xp.common.tools;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.xp.common.po.ResultData;
 import com.xp.common.po.Status;
-import com.xp.xzqy.po.XZDM;
-import com.xp.xzqy.po.XZDMVo;
-import com.xp.zjd.service.ZJDService;
-
-import org.jetbrains.annotations.NotNull;
+import com.xp.xzqy.service.XZDMService;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,7 +16,6 @@ import okhttp3.Callback;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class OkHttpClientUtils {
@@ -46,8 +36,9 @@ public class OkHttpClientUtils {
      * @param t   对象  如果发送 list 集合， 请用带 mark 的参数 的重载方法
      */
     public static <T> void httpPost(final String url, final T t, final Callback callback) {
-        httpPost(url,t.getClass().getSimpleName().toLowerCase(),t,callback);
+        httpPost(url, t.getClass().getSimpleName().toLowerCase(), t, callback);
     }
+
     /**
      * Post请求 异步
      * 使用 Callback 回调可返回子线程中获得的网络数据
@@ -76,6 +67,7 @@ public class OkHttpClientUtils {
             }
         }).start();
     }
+
     /**
      * 发送多个对象到后台
      *
@@ -164,7 +156,7 @@ public class OkHttpClientUtils {
      * @param response
      * @return
      */
-    public static ResultData ResposeToResultData(Response response, Type clazz) {
+    public static ResultData resposeToResultData(Response response, Type clazz) {
         try {
 
             String resposeStr = response.body().string();
@@ -184,6 +176,25 @@ public class OkHttpClientUtils {
             e.printStackTrace();
         }
         return new ResultData(Status.Error, "没有返回值");
+    }
+
+    /**
+     * "请检查网络:"+tip + "超时"
+     *
+     * @param tip
+     */
+    public static void connetOutTime(String tip) {
+        AndroidTool.closeProgressBar();
+        AndroidTool.showAnsyTost("请检查网络:" + tip + "超时！！！",Status.Error);
+    }
+
+    /**
+     * 自带 选中的行政代码 进行请求
+     * @param url
+     * @param callback
+     */
+    public static void httpPostAndDJZQDM(String url, Callback callback) {
+        httpPost(url,"djzqdmsStr",  XZDMService.getSelectXZDMs(),callback);
     }
 }
 

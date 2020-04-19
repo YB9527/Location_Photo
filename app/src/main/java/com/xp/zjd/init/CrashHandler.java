@@ -1,8 +1,8 @@
-package com.xp;
+package com.xp.zjd.init;
 
 import android.widget.Toast;
 
-import com.xp.common.AndroidTool;
+import com.xp.common.tools.AndroidTool;
 
 public class CrashHandler implements Thread.UncaughtExceptionHandler {
 

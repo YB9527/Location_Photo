@@ -1,6 +1,4 @@
-package com.xp.common;
-
-import com.xp.zjd.po.ZJD;
+package com.xp.common.tools;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
