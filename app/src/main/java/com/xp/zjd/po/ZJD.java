@@ -16,7 +16,7 @@ public class ZJD {
      * 是否已经查找过本地文件
      */
     @Expose
-    private long id;
+    private Long id;
     @Expose
     private boolean isSelectNative;
     @Expose
@@ -24,20 +24,68 @@ public class ZJD {
     @Expose
     private String QUANLI;
     @Expose
+    private String bz;
+    @Expose
     private List<Photo> photos;
     @Expose
     private User user;
 
+    /**
+     * 地块是否已经上传, 创建地块时默认时false
+     */
+    @Expose
+    private Boolean isUpload;
+    @Expose
+    private List<ZJDGeometry> zjdGeometry;//考虑多部件情况
+
     public ZJD(String ZDNUM, String QUANLI) {
         this.ZDNUM = ZDNUM;
         this.QUANLI = QUANLI;
+
+        //类初始化
+        this.isUpload =false;
+        this.zjdGeometry = new ArrayList<>();
     }
 
     public ZJD() {
-
+        //类初始化
+        this.isUpload =false;
+        this.zjdGeometry = new ArrayList<>();
     }
 
-    public long getId() {
+    public List<ZJDGeometry> getZjdGeometry() {
+        return zjdGeometry;
+    }
+
+    public void setZjdGeometry(List<ZJDGeometry> zjdGeometry) {
+        this.zjdGeometry = zjdGeometry;
+    }
+
+    public String getBz() {
+        return bz;
+    }
+
+    public void setBz(String bz) {
+        this.bz = bz;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Boolean getUpload() {
+        return isUpload;
+    }
+
+    public void setUpload(Boolean upload) {
+        isUpload = upload;
+    }
+
+    public Long getId() {
         return id;
     }
 
@@ -49,7 +97,7 @@ public class ZJD {
         isSelectNative = selectNative;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -102,11 +150,15 @@ public class ZJD {
 
     @Override
     public String toString() {
-        return "{" +
+        return "ZJD{" +
                 "id=" + id +
                 ", isSelectNative=" + isSelectNative +
                 ", ZDNUM='" + ZDNUM + '\'' +
                 ", QUANLI='" + QUANLI + '\'' +
+                ", bz='" + bz + '\'' +
+                ", photos=" + photos +
+                ", user=" + user +
+                ", isUpload=" + isUpload +
                 '}';
     }
 }

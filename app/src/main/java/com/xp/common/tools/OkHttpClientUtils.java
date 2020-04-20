@@ -30,7 +30,7 @@ public class OkHttpClientUtils {
 
     /**
      * Post请求 异步
-     * 使用 Callback 回调可返回子线程中获得的网络数据
+     * 使用 ICallback 回调可返回子线程中获得的网络数据
      *
      * @param url
      * @param t   对象  如果发送 list 集合， 请用带 mark 的参数 的重载方法
@@ -41,7 +41,7 @@ public class OkHttpClientUtils {
 
     /**
      * Post请求 异步
-     * 使用 Callback 回调可返回子线程中获得的网络数据
+     * 使用 ICallback 回调可返回子线程中获得的网络数据
      *
      * @param url
      * @param t   对象
@@ -88,7 +88,7 @@ public class OkHttpClientUtils {
 
     /**
      * Post请求 异步
-     * 使用 Callback 回调可返回子线程中获得的网络数据
+     * 使用 ICallback 回调可返回子线程中获得的网络数据
      *
      * @param url
      * @param params 参数

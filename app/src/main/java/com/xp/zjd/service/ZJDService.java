@@ -1,11 +1,17 @@
 package com.xp.zjd.service;
 
+import com.google.gson.reflect.TypeToken;
+import com.xp.common.YBException.ZJDException;
+import com.xp.common.po.Redis;
+import com.xp.common.po.Status;
 import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.FileTool;
 import com.xp.common.tools.OkHttpClientUtils;
 import com.xp.common.tools.Photo;
+import com.xp.common.tools.RedisTool;
 import com.xp.common.tools.Tool;
 import com.xp.zjd.photo.PhotoService;
+import com.xp.zjd.po.ZJD;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -44,12 +50,12 @@ public class ZJDService {
 
 
     /**
-     *
      * @return 储存离线数据库的文件夹
      */
-    public static  String getTPKsDir(){
-        return     zjdDirRoot+"tpks/";
+    public static String getTPKsDir() {
+        return zjdDirRoot + "tpks/";
     }
+
     /**
      * 上传所有照片
      *
@@ -81,43 +87,79 @@ public class ZJDService {
      * @return
      */
     public static String getGeodatabaseDir() {
-        String path = zjdDirRoot + "gdbs/" ;
+        String path = zjdDirRoot + "gdbs/";
         return path;
     }
+
     /**
      * 得到宅基地的 离线数据库
      *
      * @return
      */
     public static String getGeodatabasePath() {
-        String path = getGeodatabaseDir()+ zjdGeodatabaseName;
+        String path = getGeodatabaseDir() + zjdGeodatabaseName;
         return path;
     }
+
     /**
-     *
-     * @param isdownload  true 不管有无都重新下载geodatabase ，false 是 有才下载
+     * @param isdownload true 不管有无都重新下载geodatabase ，false 是 有才下载
      */
     public static void downloadGeodatase(boolean isdownload) {
         final File file = new File(ZJDService.getGeodatabasePath());
         if (!file.exists() || isdownload) {
             //如果没有 下载服务器的 离线数据库
             file.getParentFile().mkdirs();
-            OkHttpClientUtils.httpGet(ZJDService.getURLBasic() + "downloadGeodatabase?geodatabaseName="+zjdGeodatabaseName, new Callback() {
+            OkHttpClientUtils.httpGet(ZJDService.getURLBasic() + "downloadGeodatabase?geodatabaseName=" + zjdGeodatabaseName, new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
                 }
 
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                    FileTool.saveFile(response.body().byteStream(),ZJDService.getGeodatabasePath());
+                     FileTool.saveFile(response.body().byteStream(), ZJDService.getGeodatabasePath());
                 }
-
             });
-
         }
-
     }
 
+    /**
+     * 保存地块，有如下情况
+     * 1、存在于服务器时，更新服务器，用 isupload 鉴别
+     * 2、存在于本地时，
+     * 如果 == null，保存地块，
+     * 如果 != null 更新本地地块
+     *
+     * @param zjd
+     * @param callback
+     */
+    public static boolean  updateDK(ZJD zjd, Callback callback) throws ZJDException {
+        if (zjd.getUpload()) {
+            //更新服务器
+            updateDKInServer(zjd, callback);
+        } else  {
+            //保存 //更新本地地块
+            RedisTool.saveRedis("zjd_"+zjd.getZDNUM(), zjd);
 
+        }
+        return  true;
+    }
+
+    /**
+     * 更新服务器中的地块
+     *
+     * @param zjd
+     * @param callback
+     */
+    private static void updateDKInServer(ZJD zjd, Callback callback) {
+          OkHttpClientUtils.httpPost(getURLBasic()+"updatezjd",zjd,callback);
+    }
+
+    /**
+     * 从本地数据库中找到地块
+     * @return
+     */
+    public static List<ZJD> findLoaclZJDs() {
+        List<ZJD> zjds = RedisTool.findListRedis("'zjd_%'",ZJD.class);
+        return zjds;
+    }
 }

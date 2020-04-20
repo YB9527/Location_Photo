@@ -6,8 +6,10 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.xp.usermanager.service.UserService;
 import com.xp.zjd.po.FileSelect;
+import com.xp.zjd.po.ZJD;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 public class RedisTool {
@@ -133,5 +135,52 @@ public class RedisTool {
             return  null;
         }
         return Tool.JsonToObject(json,type);
+    }
+
+    /**
+     * 保存 redis ，
+     * @param mark
+     * @param obj
+     * @return
+     */
+    public static void  saveRedis(String mark,Object obj) {
+        String jsonInDatabase = findRedis(mark);
+        if (Tool.isEmpty(jsonInDatabase)) {
+            String json = Tool.objectToJson(obj);
+            insertData(mark, json);
+
+        }else{
+            updateRedis(mark,obj);
+        }
+    }
+
+    /**
+     *
+     * @param beginMark 匹配开始 mark 值
+     * @param type
+     * @return
+     */
+    public static <T> List<T> findListRedis(String beginMark, Type type) {
+        List<T> list = new ArrayList<>();
+        List<String> jsons = findListRedis(beginMark);
+        for (String json : jsons
+             ) {
+            T t = Tool.JsonToObject(json,type);
+            list.add(t);
+        }
+        return  list;
+    }
+
+    private static List<String> findListRedis(String mark) {
+        SQLiteDatabase db = getSQLiteDatabase();
+        String sql = "select json from  redis where  mark like  "+mark;
+        List<String> jsons = new ArrayList<>();
+        Cursor cursor = db.rawQuery(sql, null);
+        while (cursor.moveToNext()) {
+            String json = cursor.getString(0);
+           jsons.add(json);
+        }
+        return  jsons;
+
     }
 }

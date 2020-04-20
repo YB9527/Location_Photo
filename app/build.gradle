@@ -6,11 +6,16 @@ android {
     defaultConfig {
         applicationId "com.xp"
         minSdkVersion 15
-        targetSdkVersion 29
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+
+        ndk {
+            abiFilters 'x86', 'armeabi', 'armeabi-v7a'
+        }
+
     }
     packagingOptions{
         exclude 'META-INF/LGPL2.1'

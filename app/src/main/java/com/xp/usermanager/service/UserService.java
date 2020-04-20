@@ -1,6 +1,7 @@
 package com.xp.usermanager.service;
 
 import com.xp.zjd.fragments.MapSetting;
+import com.xp.zjd.fragments.ZJDArcgisMap;
 import com.xp.zjd.init.InitFragment;
 import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.OkHttpClientUtils;
@@ -100,8 +101,9 @@ public class UserService {
                         MapSetting.findRedisLoadTDT();
 
                         //转到欢迎界面
-                        InitFragment initFragment = new InitFragment();
-                        AndroidTool.replaceFrameLayout(initFragment);
+                        //InitFragment initFragment = new InitFragment();
+                        //AndroidTool.replaceFrameLayout(initFragment);
+                        AndroidTool.replaceFrameLayout(new ZJDArcgisMap());
                     }
                     AndroidTool.closeProgressBar();
                 }

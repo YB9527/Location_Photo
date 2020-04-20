@@ -31,15 +31,8 @@
             android:layout_height="wrap_content"
             android:text="信息查看" />
         <Button
-            android:id="@+id/changeBottomDrawing"
-            android:layout_below = "@id/addNotesPoint"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="地图切换" />
-        <Button
             android:id="@+id/clearMapState"
             android:layout_below="@id/addNotesPoint"
-            android:layout_toRightOf="@id/changeBottomDrawing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="清除地图状态" />
@@ -56,7 +49,7 @@
             android:layout_toRightOf="@id/btuFinish"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="c测试" />
+            android:text="测试" />
 
         <com.esri.android.map.MapView
             android:id="@+id/map"
@@ -64,6 +57,4 @@
             android:layout_height="match_parent"
             />
     </RelativeLayout>
-
-
 </FrameLayout>

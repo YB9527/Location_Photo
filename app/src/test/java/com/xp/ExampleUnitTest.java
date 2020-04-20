@@ -20,15 +20,6 @@ public class ExampleUnitTest {
 
     @Test
     public void Test() {
-        ZJD zjd = new ZJD();
-        zjd.setId(0);
-        zjd.setmDKBM("1");
-        zjd.setmDKMC("2");
-        Photo p = new Photo("d:/123.jpg",false);
-        zjd.getPhotos().add(p);
-        p.setId(123);
-       p.setZjd(zjd);
-       //String str =  new Gson().toJson(p);
 
 
         //Photo geson = new Gson().fromJson("{path:"+"d:/123.jpg,"+"name:"+"123.jpg","id:"+"123","zjd:"+"{"+"mDKBM:"+'1'," mDKMC:"+"2", "id:"+"0"+"}","isUpload:"+"false}",Photo.class);
