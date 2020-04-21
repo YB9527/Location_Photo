@@ -35,11 +35,18 @@
             android:layout_below="@id/addNotesPoint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="清除地图状态" />
+            android:text="清除状态" />
+        <Button
+            android:id="@+id/btuClearDraw"
+            android:layout_below="@id/addNotesLine"
+            android:layout_toRightOf="@id/clearMapState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="清除图形" />
         <Button
             android:id="@+id/btuFinish"
             android:layout_below="@id/addNotesPoint"
-            android:layout_toRightOf="@id/clearMapState"
+            android:layout_toRightOf="@id/btuClearDraw"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="完成" />

@@ -9,9 +9,13 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.fragment.app.FragmentManager;
+
 import com.xp.R;
+import com.xp.common.po.MyCallback;
+import com.xp.common.po.ResultData;
+import com.xp.common.po.Status;
 import com.xp.zjd.photo.PhotoService;
-import com.xp.zjd.photo.PhotosFragment;
 import com.xp.zjd.po.ZJD;
 import com.xp.common.tools.AndroidTool;
 
@@ -28,8 +32,9 @@ public class ZJDTableAdapter extends BaseAdapter {
     private List<ZJD> datas;
     private Context context;
     LayoutInflater layoutInflater;
-
-    public ZJDTableAdapter(Context context) {
+    private FragmentManager fragmentManager;
+    public ZJDTableAdapter(FragmentManager fragmentManager,Context context) {
+        this.fragmentManager =fragmentManager;
         this.context = context;
         this.datas = new ArrayList<>();
         init();
@@ -67,6 +72,7 @@ public class ZJDTableAdapter extends BaseAdapter {
         ViewHolder viewHolder = null;
         if (convertView == null) {
             View view = layoutInflater.inflate(R.layout.cbd_dktableview, null);
+
             viewHolder = new ViewHolder();
             viewHolder.tv_dkbm = view.findViewById(R.id.tv_dkbm);
             viewHolder.tv_dkmc = view.findViewById(R.id.tv_dkmc);
@@ -142,9 +148,36 @@ public class ZJDTableAdapter extends BaseAdapter {
 
         @Override
         public void onClick(View v) {
-            ZJD ZJD = (ZJD) v.getTag();
+           /* ZJD ZJD = (ZJD) v.getTag();
             PhotosFragment fragment = new PhotosFragment(ZJD);
-            AndroidTool.replaceFrameLayout(fragment);
+            AndroidTool.replaceFrameLayout(fragment);*/
+
+            final ZJD zjd = (ZJD) v.getTag();
+            final List<ZJD> addZJDLists = new ArrayList<>();
+
+            addZJDLists.add(zjd);
+            MapDKDialog zjdDialog = MapDKDialog.newInstance(datas, addZJDLists, new MyCallback() {
+                @Override
+                public void call(ResultData result) {
+                    if (result.getStatus() == Status.Error) {
+                        AndroidTool.showAnsyTost(result.getMessage(), Status.Error);
+                    } else {
+                        //检查宗地编码有没有重复的，有的话，不能保存
+                        //AndroidTool.showAnsyTost("保存成功：" + zjd.getZDNUM(), Status.Success);
+                    }
+                    AndroidTool.getMainActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            notifyDataSetChanged();
+                        }
+                    });
+
+                }
+            });
+            //弹出 地块窗口，
+            zjdDialog.show(fragmentManager);
+
         }
     }
+
 }

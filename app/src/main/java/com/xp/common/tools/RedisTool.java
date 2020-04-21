@@ -104,7 +104,12 @@ public class RedisTool {
      * @param obj   obj转换为json 进行保存
      */
     public static void updateRedis(String mark, Object obj) {
-        updateRedis(mark, Tool.getGson().toJson(obj));
+        if(obj == null){
+            updateRedis(mark, "");
+        }else{
+            updateRedis(mark, Tool.getGson().toJson(obj));
+        }
+
     }
     /**
      * 插入数据

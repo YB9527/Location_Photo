@@ -60,7 +60,9 @@ public class MapSetting extends Fragment implements View.OnClickListener {
         List<FileSelect> tileFileSelected = RedisTool.findRedis(redisMapTileSetting,new TypeToken<List<FileSelect>>(){}.getType());
         tileSelect = new TileSelect(view,tileFileSelected);
         List<FileSelect> geodatabaseFileSelected = RedisTool.findRedis(redisMapGeodatabaseSetting,new TypeToken<List<FileSelect>>(){}.getType());
-        geodatabaseSelect = new GeodatabaseSelect(view,geodatabaseFileSelected);
+        if(!Tool.isEmpty(geodatabaseFileSelected)){
+            geodatabaseSelect = new GeodatabaseSelect(view,geodatabaseFileSelected);
+        }
 
         Button btu_downloadgeodatabase = view.findViewById(R.id.btu_downloadgeodatabase);
         btu_downloadgeodatabase.setOnClickListener(this);
@@ -105,10 +107,11 @@ public class MapSetting extends Fragment implements View.OnClickListener {
      */
     private void btu_submit() {
 
-        RedisTool.updateRedis(redisMapGeodatabaseSetting, FileSelect.getSelectedFile(geodatabaseSelect.fileSelects) );
+        if(geodatabaseSelect != null){
+            RedisTool.updateRedis(redisMapGeodatabaseSetting, FileSelect.getSelectedFile(geodatabaseSelect.fileSelects) );
+        }
         RedisTool.updateRedis(redisMapTileSetting,FileSelect.getSelectedFile(tileSelect.fileSelects));
         AndroidTool.showToast("保存成功", Status.Success);
-
         isLoadTDT =  cb_loadTDT.isChecked();
         RedisTool.updateRedis(redisMapLoadTDT,isLoadTDT);
     }

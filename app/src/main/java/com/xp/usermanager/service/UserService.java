@@ -1,5 +1,7 @@
 package com.xp.usermanager.service;
 
+import com.xp.common.po.Status;
+import com.xp.usermanager.fragments.Regist;
 import com.xp.zjd.fragments.MapSetting;
 import com.xp.zjd.fragments.ZJDArcgisMap;
 import com.xp.zjd.init.InitFragment;
@@ -89,8 +91,10 @@ public class UserService {
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                     ResultData resultData = OkHttpClientUtils.resposeToResultData(response, User.class);
-                    if (resultData == null || resultData.getObject() == null) {
+                    if (resultData == null) {
                         AndroidTool.showAnsyTost("密码 或者 账号 为 错误");
+                    } else if (resultData.getStatus() == Status.Error) {
+                        AndroidTool.showAnsyTost(resultData.getMessage());
                     } else {
                         UserService.setUser((User) resultData.getObject());
                         RedisTool.updateRedis(redisLoginUser, user);
@@ -103,7 +107,7 @@ public class UserService {
                         //转到欢迎界面
                         //InitFragment initFragment = new InitFragment();
                         //AndroidTool.replaceFrameLayout(initFragment);
-                        AndroidTool.replaceFrameLayout(new ZJDArcgisMap());
+                        AndroidTool.replaceFrameLayout(new Regist());
                     }
                     AndroidTool.closeProgressBar();
                 }

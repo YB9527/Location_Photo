@@ -13,7 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.RequiresApi;
 
 import com.xp.R;
-import com.xp.common.tools.DataTool;
+import com.xp.common.tools.DateTool;
 import com.xp.common.tools.FileTool;
 import com.xp.common.tools.ReflectTool;
 import com.xp.zjd.po.FileSelect;
@@ -142,7 +142,7 @@ public class TileSelect {
             double size = fileSelect.getFileSize();
 
             viewHolder.tv_file_size.setText(String.format("%.2f", size) + "M");
-            viewHolder.tv_file_createdate.setText(DataTool.dataFormat(fileSelect.getFileCreatedate()));
+            viewHolder.tv_file_createdate.setText(DateTool.dataFormat(fileSelect.getFileCreatedate()));
 
             return convertView;
 

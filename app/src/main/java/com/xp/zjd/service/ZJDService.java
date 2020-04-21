@@ -1,8 +1,8 @@
 package com.xp.zjd.service;
 
-import com.google.gson.reflect.TypeToken;
 import com.xp.common.YBException.ZJDException;
-import com.xp.common.po.Redis;
+import com.xp.common.po.MyCallback;
+import com.xp.common.po.ResultData;
 import com.xp.common.po.Status;
 import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.FileTool;
@@ -116,7 +116,7 @@ public class ZJDService {
 
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                     FileTool.saveFile(response.body().byteStream(), ZJDService.getGeodatabasePath());
+                    FileTool.saveFile(response.body().byteStream(), ZJDService.getGeodatabasePath());
                 }
             });
         }
@@ -130,18 +130,31 @@ public class ZJDService {
      * 如果 != null 更新本地地块
      *
      * @param zjd
-     * @param callback
+     * @param myCallback
      */
-    public static boolean  updateDK(ZJD zjd, Callback callback) throws ZJDException {
+    public static void updateDK(ZJD zjd, final MyCallback myCallback) throws ZJDException {
         if (zjd.getUpload()) {
             //更新服务器
-            updateDKInServer(zjd, callback);
-        } else  {
+            updateDKInServer(zjd, new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    myCallback.call(new ResultData(Status.Error, "超时"));
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                    ResultData result = new ResultData(Status.Success, "成功", response);
+                    myCallback.call(result);
+                }
+            });
+        } else {
             //保存 //更新本地地块
-            RedisTool.saveRedis("zjd_"+zjd.getZDNUM(), zjd);
+            RedisTool.saveRedis("zjd_" + zjd.getZDNUM(), zjd);
+
+            myCallback.call(new ResultData(Status.Success, "成功"));
+
 
         }
-        return  true;
     }
 
     /**
@@ -151,15 +164,24 @@ public class ZJDService {
      * @param callback
      */
     private static void updateDKInServer(ZJD zjd, Callback callback) {
-          OkHttpClientUtils.httpPost(getURLBasic()+"updatezjd",zjd,callback);
+        OkHttpClientUtils.httpPost(getURLBasic() + "updatezjd", zjd, callback);
     }
 
     /**
      * 从本地数据库中找到地块
+     *
      * @return
      */
     public static List<ZJD> findLoaclZJDs() {
-        List<ZJD> zjds = RedisTool.findListRedis("'zjd_%'",ZJD.class);
+        List<ZJD> zjds = RedisTool.findListRedis("'zjd_%'", ZJD.class);
         return zjds;
+    }
+
+    /**
+     * 找web 端的 地块
+     * @return
+     */
+    public static void findWebZJDs(MyCallback callback) {
+        OkHttpClientUtils.httpPostContainsDJZQDM_User(getURLBasic() + "findzjdsbyxzdmanduser",callback);
     }
 }

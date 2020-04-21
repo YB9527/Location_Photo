@@ -78,7 +78,7 @@ public class ZJDFragment extends Fragment implements View.OnClickListener {
 
     public ZJDTableAdapter getAdapter(View view) {
         AndroidTool.showProgressBar();
-        final ZJDTableAdapter adapter = new ZJDTableAdapter(view.getContext());
+        final ZJDTableAdapter adapter = new ZJDTableAdapter(getFragmentManager(), view.getContext());
 
         OkHttpClientUtils.httpPostAndDJZQDM(ZJDService.getURLBasic() + "findbydjzqdm", new Callback() {
             @Override

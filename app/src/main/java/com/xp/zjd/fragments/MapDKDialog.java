@@ -23,8 +23,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.xp.R;
 import com.xp.common.YBException.ZJDException;
 import com.xp.common.po.MyCallback;
-import com.xp.common.po.Redis;
-import com.xp.common.po.Result;
+import com.xp.common.po.ResultData;
 import com.xp.common.po.Status;
 import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.OkHttpClientUtils;
@@ -49,20 +48,26 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
     private int currentIndex = 0;
     private ProgressBar progressBar;
     private MyCallback myCallback;
+    private List<ZJD> zjdsInDatase;
+    public static MapDKDialog newInstance(List<ZJD> zjdsInDatase, List<ZJD> zjds) {
 
-    public static MapDKDialog newInstance(List<ZJD> zjds ) {
-
-      return  newInstance(zjds,null);
+        return newInstance(zjdsInDatase, zjds, null);
     }
-    public static MapDKDialog newInstance(List<ZJD> zjds, MyCallback myCallback) {
+
+    public static MapDKDialog newInstance(List<ZJD> zjdsInDatase, List<ZJD> zjds, MyCallback myCallback) {
+
 
         Bundle args = new Bundle();
         MapDKDialog fragment = new MapDKDialog();
         fragment.setArguments(args);
         fragment.zjds = zjds;
+        fragment.zjdsInDatase = zjdsInDatase;
         fragment.myCallback = myCallback;
         return fragment;
     }
+
+
+
 
     @Override
     public void onStart() {
@@ -77,6 +82,16 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
         DisplayMetrics dm = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
         getDialog().getWindow().setLayout((int) (dm.widthPixels * 0.72), ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        //如果有关闭窗口的回调函数，才进行
+        /*getDialog().setOnDismissListener(new DialogInterface.OnDismissListener(){
+            public void onDismiss(DialogInterface dialog){
+                if(myCallback != null){
+                    myCallback.call(new Result(Status.Other,"dialog关闭回调"));
+                }
+            }
+        });*/
+
     }
 
     View view;
@@ -99,7 +114,7 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
                 return false;
             }
         });
-        et_quanli = view.findViewById(R.id.et_zdnum);
+        et_quanli = view.findViewById(R.id.et_quanli);
         et_bz = view.findViewById(R.id.et_bz);
 
         initButton();
@@ -246,6 +261,7 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
 
 
     public void show(FragmentManager fragmentManager) {
+
         this.show(fragmentManager, "zjddialog");
     }
 
@@ -265,10 +281,9 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
      * 取消
      */
     private void cancel() {
-        if(myCallback != null){
-            myCallback.call(new Result(Status.Error, "取消了"));
+        if (myCallback != null) {
+            myCallback.call(new ResultData(Status.Error, "取消了"));
         }
-
         this.getDialog().dismiss();
     }
 
@@ -277,25 +292,22 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
      */
     private void submit() {
         ZJD zjd = zjds.get(currentIndex);
+        String zdnum = et_zdnum.getText().toString();
+        if (Tool.isEmpty(zdnum)) {
+            AndroidTool.showToast("宗地没有编码，不能保存", Status.Error);
+            return;
+        }
         zjd.setZDNUM(et_zdnum.getText().toString());
         zjd.setQUANLI(et_quanli.getText().toString());
         zjd.setBz(et_bz.getText().toString());
         try {
-            ZJDService.updateDK(zjd, new Callback() {
-                @Override
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
-                }
-
-                @Override
-                public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-
-                }
-            });
+            ZJDService.updateDK(zjd, myCallback);
             this.getDialog().dismiss();
         } catch (ZJDException e) {
             AndroidTool.showToast(e.getMessage(), Status.Error);
         }
 
     }
+
+
 }

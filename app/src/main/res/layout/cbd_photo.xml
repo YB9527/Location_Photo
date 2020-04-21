@@ -6,7 +6,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <TextView
+   <!--     <TextView
             android:id="@+id/tv_zdnum"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -14,7 +14,7 @@
             android:id="@+id/tv_quanli"
             android:layout_marginLeft="10dp"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content" />-->
         <Button
             android:id="@+id/btu_cbd_photo_add"
             android:layout_marginLeft="10dp"

@@ -76,7 +76,12 @@ public class PhotoService {
             zjd.getPhotos().addAll(unUploadPhotos);
         }
     }
-
+    public static void addNativePhoto(List<ZJD> zjds) {
+        for (ZJD zjd: zjds
+             ) {
+            addNativePhoto(zjd);
+        }
+    }
     /**
      * 得到没有上传的文件
      * @param zjd
@@ -134,4 +139,6 @@ public class PhotoService {
         }
         return  photos;
     }
+
+
 }

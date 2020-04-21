@@ -31,7 +31,7 @@ public class Tool {
      * @return
      */
     public static boolean isEmpty(List list) {
-        return list == null ? false: list.isEmpty();
+        return list == null ? true: list.isEmpty();
     }
 
     /**
@@ -49,7 +49,7 @@ public class Tool {
      * @return
      */
     public static boolean isEmpty(String str) {
-        return str == null ? true : str.isEmpty();
+        return str == null ? true : str.trim().isEmpty();
     }
 
 
@@ -74,7 +74,7 @@ public class Tool {
      * @return
      */
     public static String getHostAddress() {
-        String hostAddress = "http://192.168.2.183:8080/";
+        String hostAddress = "http://192.168.2.162:3334/";
         return hostAddress;
     }
 

@@ -1,9 +1,13 @@
 package com.xp.common.tools;
 
 import com.google.gson.Gson;
+import com.xp.common.po.MyCallback;
 import com.xp.common.po.ResultData;
 import com.xp.common.po.Status;
+import com.xp.usermanager.service.UserService;
 import com.xp.xzqy.service.XZDMService;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -195,6 +199,54 @@ public class OkHttpClientUtils {
      */
     public static void httpPostAndDJZQDM(String url, Callback callback) {
         httpPost(url,"djzqdmsStr",  XZDMService.getSelectXZDMs(),callback);
+    }
+
+    /**
+     * 自带 选中的行政代码 进行请求
+     * @param url
+     * @param callback
+     */
+    public static void httpPostContainsDJZQDM_User(String url, final MyCallback callback) {
+        Long userId = UserService.getUserId();
+        Map<String,Object> map = new HashMap<>();
+        map.put("userid",userId);
+        map.put("djzqdms", XZDMService.getSelectXZDMs());
+        httpPostObjects(url, map, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                callback.call(getConnectOutTimeResult());
+
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                callback.call(new ResultData(Status.Success,response));
+            }
+        });
+
+    }
+
+    /**
+     *得到 超时 回应
+     * @return
+     */
+    public static ResultData getConnectOutTimeResult() {
+        return  new ResultData(Status.Error,"服务器连接超时，请检查网络");
+    }
+
+    public static <T>void httpPost(String url, final T t, final Type type, final MyCallback myCallback) {
+        httpPost(url, t, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                myCallback.call(getConnectOutTimeResult());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                ResultData resultData = resposeToResultData(response,type);
+                myCallback.call(resultData);
+            }
+        });
     }
 }
 

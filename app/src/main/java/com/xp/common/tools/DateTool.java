@@ -1,14 +1,13 @@
 package com.xp.common.tools;
 
-import android.icu.text.SimpleDateFormat;
-import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
-@RequiresApi(api = Build.VERSION_CODES.N)
-public class DataTool {
+
+public class DateTool {
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//24小时制
 
     /**

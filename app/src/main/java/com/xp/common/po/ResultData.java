@@ -2,10 +2,13 @@ package com.xp.common.po;
 
 import com.google.gson.annotations.Expose;
 
+import okhttp3.Response;
+
 public class ResultData {
     public ResultData(){
 
     }
+
     /**
      * http 请求的响应
      * @param status 响应状态
@@ -40,9 +43,30 @@ public class ResultData {
     @Expose
     private Object object;
 
-    public ResultData(Status error, String message) {
+    private Response response;
+
+    public ResultData(Status status, String message) {
         this.status = status;
         this.message = message;
+    }
+
+    public ResultData(Status status, Response response) {
+        this.status = status;
+        this.response = response;
+    }
+
+    public ResultData(Status status, String message, Response response) {
+        this.status = status;
+        this.response = response;
+        this.message = message;
+    }
+
+    public Response getResponse() {
+        return response;
+    }
+
+    public void setResponse(Response response) {
+        this.response = response;
     }
 
     public Object getObject() {

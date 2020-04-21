@@ -1,57 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-     >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
     <LinearLayout
-        android:gravity="center"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
         <LinearLayout
-            android:gravity="center"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:gravity="right">
+            <Button
+                android:id="@+id/btu_registAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="注册账号" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:gravity="center">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="账号："
-                />
+                android:text="账号：" />
+
             <EditText
                 android:id="@+id/tv_accout"
-                android:minWidth="200dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="请输入"
-                />
+                android:minWidth="200dp" />
         </LinearLayout>
-        <LinearLayout
-            android:layout_marginTop="20dp"
-            android:gravity="center"
 
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="20dp"
+            android:gravity="center">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="密码："
-                />
+                android:text="密码：" />
+
             <EditText
                 android:id="@+id/tv_password"
-                android:minWidth="200dp"
-                android:password="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:hint="请输入"
-                />
+                android:minWidth="200dp"
+                android:password="true" />
         </LinearLayout>
+
+
+
         <Button
             android:id="@+id/btu_submit"
-            android:layout_marginTop="50dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="登录"
-             />
+            android:layout_marginTop="30dp"
+            android:text="登录" />
     </LinearLayout>
 
 </FrameLayout>

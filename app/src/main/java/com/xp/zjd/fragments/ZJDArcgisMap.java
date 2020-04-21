@@ -20,6 +20,7 @@ import com.esri.android.map.ags.ArcGISLocalTiledLayer;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Envelope;
+import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.Polygon;
 import com.esri.core.geometry.Polyline;
@@ -36,15 +37,18 @@ import com.esri.core.symbol.TextSymbol;
 import com.esri.core.table.FeatureTable;
 import com.esri.core.tasks.SpatialRelationship;
 import com.esri.core.tasks.query.QueryParameters;
+import com.google.gson.reflect.TypeToken;
 import com.xp.R;
 import com.xp.common.po.MyCallback;
-import com.xp.common.po.Result;
+import com.xp.common.po.ResultData;
 import com.xp.common.po.Status;
 import com.xp.common.tdttool.TianDiTuTiledMapServiceLayer;
 import com.xp.common.tdttool.TianDiTuTiledMapServiceType;
 import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.ArcgisTool;
+import com.xp.common.tools.OkHttpClientUtils;
 import com.xp.common.tools.Tool;
+import com.xp.zjd.photo.PhotoService;
 import com.xp.zjd.po.MapListenerEnum;
 import com.xp.zjd.po.ZJD;
 import com.xp.zjd.po.ZJDGeometry;
@@ -63,12 +67,14 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
 
     //本地图形容器  //服务器中的图形容器
     private GraphicsLayer graphicsLayer;
+    //临时图形 容器
+    private GraphicsLayer drawGraphicsLayer;
     //点集合
     private List<Point> pointList = new ArrayList<>();
     ArcGISLocalTiledLayer localTiledLayer;
     private View view;
     private SpatialReference sp;
-
+    private List<ZJD> zjds;
     /*
      localtilayer1 = new ArcGISLocalTiledLayer(file.getAbsolutePath());
             mMapView.addLayer(localtilayer1);
@@ -85,11 +91,13 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
 
         View view = inflater.inflate(R.layout.fragment_zjd_arcgismap, container, false);
         this.view = view;
+        zjds = new ArrayList<>();
         init();
         //按钮初始化
         buttonAddLister();
         //定位到上次点
         locationLastPoint();
+
         return view;
     }
 
@@ -109,7 +117,7 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
 
                     //添加服务器中地块
                     //添加本地地块
-                    addLocalZJD();
+                    addZJDToGraphic();
 
                     AndroidTool.closeProgressBar();
                 } catch (InterruptedException e) {
@@ -119,6 +127,8 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         }).start();
     }
 
+    private TapListener tapListener;
+
     /**
      * map 的初始化
      */
@@ -126,7 +136,8 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
 
         mMapView = view.findViewById(R.id.map);
         //地图事件监听
-        mMapView.setOnSingleTapListener(new TapListener());
+        tapListener = new TapListener();
+        mMapView.setOnSingleTapListener(tapListener);
         //去除背后的网格
         mMapView.setMapBackground(0xffffff, 0xffffff, 1.0f, 100.0f);
         //去除水印(Licensed for Developer User Only)
@@ -135,7 +146,8 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
 
         graphicsLayer = new GraphicsLayer();
         mMapView.addLayer(graphicsLayer);
-
+        drawGraphicsLayer = new GraphicsLayer();
+        mMapView.addLayer(drawGraphicsLayer);
 
         //arcgis 自带底图
         //String mapServerUrl = "http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer";
@@ -171,23 +183,91 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
 
     }
 
-    /**
-     * 添加本地 地块
-     */
-    private void addLocalZJD() {
-        List<ZJD> localZJDs = ZJDService.findLoaclZJDs();
-        for (ZJD zjd : localZJDs
+    private void addZJDToGraphic(List<ZJD> zjdsTem) {
+
+        zjds.addAll(zjdsTem);
+        for (ZJD zjd : zjdsTem
         ) {
             for (ZJDGeometry zjdGeometry : zjd.getZjdGeometry()
             ) {
-                Point poin1t = ArcgisTool.jsonToGeometry(zjdGeometry.getGeometry());
-                Map<String, Object> map = new HashMap<>();
-                map.put("zjd", Tool.objectToJson(zjd));
-                Graphic graphic = new Graphic(poin1t, new SimpleMarkerSymbol
-                        (Color.RED, 8, SimpleMarkerSymbol.STYLE.CIRCLE), map);
-                graphicsLayer.addGraphic(graphic);
-
+                Geometry geometry = ArcgisTool.jsonToGeometry(zjdGeometry.getGeometry());
+                addZJDGraphic(geometry, zjd);
             }
+        }
+    }
+    /**
+     * 从本地 和web 加载地块
+     */
+    private void addZJDToGraphic() {
+
+        List<ZJD> localZJDs = ZJDService.findLoaclZJDs();
+        addZJDToGraphic(localZJDs);
+        //添加web 宅基地
+        ZJDService.findWebZJDs(new MyCallback() {
+            @Override
+            public void call(ResultData result) {
+                if(result.getStatus() == Status.Success){
+                    ResultData resultData = OkHttpClientUtils.resposeToResultData(result.getResponse(),new TypeToken<List<ZJD>>(){}.getType());
+                    if(resultData.getObject() != null){
+                        List<ZJD> webZJDs =(List<ZJD>)resultData.getObject();
+                        addZJDToGraphic(webZJDs);
+                    }
+                }else{
+                    AndroidTool.showAnsyTost(result.getMessage(),Status.Error);
+                }
+            }
+        });
+    }
+    /**
+     * 添加到 mapview
+     *
+     * @param geometry
+     * @param zjd
+     */
+    private void addZJDGraphic(Geometry geometry, ZJD zjd) {
+        int hasePhoto = Color.GREEN;
+        int noPhoto = Color.RED;
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("zjd", Tool.objectToJson(zjd));
+        Graphic graphic = null;
+        switch (geometry.getType()) {
+            case POINT:
+                if (zjd.getPhotos().size() > 0) {
+                    graphic = new Graphic(geometry, new SimpleMarkerSymbol
+                            (hasePhoto, 8, SimpleMarkerSymbol.STYLE.CIRCLE), map);
+                } else {
+                    graphic = new Graphic(geometry, new SimpleMarkerSymbol
+                            (noPhoto, 8, SimpleMarkerSymbol.STYLE.CIRCLE), map);
+                }
+
+                break;
+            case POLYLINE:
+                if (zjd.getPhotos().size() > 0) {
+                    graphic = new Graphic(geometry, new SimpleLineSymbol(hasePhoto, 3, SimpleLineSymbol.STYLE.SOLID), map);
+                } else {
+                    graphic = new Graphic(geometry, new SimpleLineSymbol(noPhoto, 3, SimpleLineSymbol.STYLE.SOLID), map);
+                }
+                break;
+            case POLYGON:
+                SimpleLineSymbol lineSymbol;
+                SimpleFillSymbol fillSymbol;
+                if (zjd.getPhotos().size() > 0) {
+                    lineSymbol = new SimpleLineSymbol(Color.RED, 1, SimpleLineSymbol.STYLE.SOLID);
+                    fillSymbol = new SimpleFillSymbol(hasePhoto);
+                } else {
+                    lineSymbol = new SimpleLineSymbol(Color.RED, 1, SimpleLineSymbol.STYLE.SOLID);
+                    fillSymbol = new SimpleFillSymbol(noPhoto);
+                }
+                fillSymbol.setOutline(lineSymbol);
+                graphic = new Graphic(geometry, fillSymbol, map);
+                break;
+            default:
+                break;
+        }
+        drawGraphicsLayer.removeAll();
+        if (graphic != null) {
+            graphicsLayer.addGraphic(graphic);
         }
 
     }
@@ -208,7 +288,10 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         btuClearMapState.setOnClickListener(this);
 
         Button btuFinish = view.findViewById(R.id.btuFinish);
-        btuClearMapState.setOnClickListener(this);
+        btuFinish.setOnClickListener(this);
+        Button btuClearDraw = view.findViewById(R.id.btuClearDraw);
+        btuClearDraw.setOnClickListener(this);
+
     }
 
     /**
@@ -235,9 +318,38 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
                 mapListenerEnum = MapListenerEnum.None;
                 break;
             case R.id.btuFinish:
-
+                drawFinish();
+            case R.id.btuClearDraw:
+                clearDraw();
+                break;
+            default:
                 break;
 
+        }
+    }
+
+    /**
+     * 清空正在画的图形
+     */
+    private void clearDraw() {
+        this.pointList.clear();
+        this.drawGraphicsLayer.removeAll();
+    }
+
+    /**
+     * 线和面完成事件
+     */
+    private void drawFinish() {
+
+        switch (mapListenerEnum) {
+            case DrawLine:
+                tapListener.drawLine(null, true);
+                break;
+            case DrawPolygon:
+                tapListener.drawPolygon(null, true);
+                break;
+            default:
+                break;
         }
     }
 
@@ -245,6 +357,8 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
      * Map 点击事件处理
      */
     private class TapListener implements OnSingleTapListener {
+        private List<ZJD> zjds;
+
         @Override
         public void onSingleTap(float x, float y) {
             Point mapPoint = mMapView.toMapPoint(x, y);
@@ -264,10 +378,10 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
                     drawPoint(mapPoint);
                     break;
                 case DrawLine:
-                    drawLine(mapPoint);
+                    drawLine(mapPoint, false);
                     break;
                 case DrawPolygon:
-                    drawPolygon(mapPoint);
+                    drawPolygon(mapPoint, false);
                     break;
                 case LookMessage:
                     lookMessage(mapPoint);
@@ -281,12 +395,21 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         /**
          * 绘制面
          *
-         * @param mapPoint
+         * @param mapPoint 保存到数据库传入 null
+         * @param isFinish
          */
-        private void drawPolygon(Point mapPoint) {
-
-            pointList.add(mapPoint);
-            Polygon polygon = new Polygon();
+        private void drawPolygon(final Point mapPoint, boolean isFinish) {
+            if (!isFinish) {
+                drawGraphicsLayer.removeAll();
+            }
+            if (mapPoint != null) {
+                pointList.add(mapPoint);
+            }
+            if (pointList.size() <= 2) {
+                //两个点不构成面
+                return;
+            }
+            final Polygon polygon = new Polygon();
             for (int i = 0; i < pointList.size(); i++) {
                 if (i == 0) {
                     polygon.startPath(pointList.get(i)); //起点
@@ -297,19 +420,52 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
             SimpleLineSymbol lineSymbol = new SimpleLineSymbol(Color.RED, 1, SimpleLineSymbol.STYLE.SOLID);
             SimpleFillSymbol fillSymbol = new SimpleFillSymbol(Color.YELLOW);
             fillSymbol.setOutline(lineSymbol);
+            Graphic graphic;
+            if (!isFinish) {
+                graphic = new Graphic(polygon, fillSymbol);
+                drawGraphicsLayer.addGraphic(graphic);
+            } else {
+                final List<ZJD> addZJDLists = new ArrayList<>();
+                final ZJD zjd = new ZJD();
+                ZJDGeometry geometry = new ZJDGeometry(sp, polygon);
+                zjd.getZjdGeometry().add(geometry);
+                addZJDLists.add(zjd);
+                MapDKDialog zjdDialog = MapDKDialog.newInstance(zjds, addZJDLists, new MyCallback() {
+                    @Override
+                    public void call(ResultData result) {
+                        if (result.getStatus() == Status.Error) {
+                            AndroidTool.showAnsyTost(result.getMessage(), Status.Error);
+                        } else {
+                            //检查宗地编码有没有重复的，有的话，不能保存
+                            addZJDGraphic(polygon, zjd);
+                            AndroidTool.showAnsyTost("保存成功：" + zjd.getZDNUM(), Status.Success);
+                        }
+                    }
+                });
+                //弹出 地块窗口
+                zjdDialog.show(getFragmentManager());
+            }
 
-            Graphic graphic = new Graphic(polygon, fillSymbol);
-            graphicsLayer.addGraphic(graphic);
         }
 
         /**
          * 绘制线
          *
          * @param mapPoint
+         * @param isFinish
          */
-        private void drawLine(Point mapPoint) {
-            pointList.add(mapPoint);
-            Polyline polyline = new Polyline();
+        private void drawLine(Point mapPoint, boolean isFinish) {
+            if (!isFinish) {
+                drawGraphicsLayer.removeAll();
+            }
+            if (mapPoint != null) {
+                pointList.add(mapPoint);
+            }
+            if (pointList.size() <= 1) {
+                //还不构成线
+                return;
+            }
+            final Polyline polyline = new Polyline();
             if (pointList.size() > 1) {
                 for (int i = 0; i < pointList.size(); i++) {
                     if (i == 0) {
@@ -319,8 +475,31 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
                     }
                 }
             }
-            Graphic graphic = new Graphic(polyline, new SimpleLineSymbol(Color.RED, 3, SimpleLineSymbol.STYLE.SOLID));
-            graphicsLayer.addGraphic(graphic);
+            Graphic graphic;
+            if (!isFinish) {
+                graphic = new Graphic(polyline, new SimpleLineSymbol(Color.RED, 3, SimpleLineSymbol.STYLE.SOLID));
+                drawGraphicsLayer.addGraphic(graphic);
+            } else {
+                final List<ZJD> addZJDLists = new ArrayList<>();
+                final ZJD zjd = new ZJD();
+                ZJDGeometry geometry = new ZJDGeometry(sp, polyline);
+                zjd.getZjdGeometry().add(geometry);
+                addZJDLists.add(zjd);
+                MapDKDialog zjdDialog = MapDKDialog.newInstance(zjds, addZJDLists, new MyCallback() {
+                    @Override
+                    public void call(ResultData result) {
+                        if (result.getStatus() == Status.Error) {
+                            AndroidTool.showAnsyTost(result.getMessage(), Status.Error);
+                        } else {
+                            //检查宗地编码有没有重复的，有的话，不能保存
+                            addZJDGraphic(polyline, zjd);
+                            AndroidTool.showAnsyTost("保存成功：" + zjd.getZDNUM(), Status.Success);
+                        }
+                    }
+                });
+                //弹出 地块窗口
+                zjdDialog.show(getFragmentManager());
+            }
         }
 
         /**
@@ -328,23 +507,23 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
          *
          * @param mapPoint
          */
-        private void drawPoint(Point mapPoint) {
-
-            Graphic graphic = new Graphic(mapPoint, new SimpleMarkerSymbol
-                    (Color.RED, 5, SimpleMarkerSymbol.STYLE.CIRCLE));
-            graphicsLayer.addGraphic(graphic);
+        private void drawPoint(final Point mapPoint) {
             //弹出窗口
             //填写地块信息（地块名称，编码，备注信息）
-            List<ZJD> addZJDLists = new ArrayList<>();
-            ZJD zjd = new ZJD();
+            final List<ZJD> addZJDLists = new ArrayList<>();
+            final ZJD zjd = new ZJD();
             ZJDGeometry geometry = new ZJDGeometry(sp, mapPoint);
             zjd.getZjdGeometry().add(geometry);
             addZJDLists.add(zjd);
-            MapDKDialog zjdDialog = MapDKDialog.newInstance(addZJDLists, new MyCallback() {
+            MapDKDialog zjdDialog = MapDKDialog.newInstance(zjds, addZJDLists, new MyCallback() {
                 @Override
-                public void call(Result result) {
-                    if(result.getStatus() == Status.Error){
-                        AndroidTool.showToast(result.getMessage(),Status.Error);
+                public void call(ResultData result) {
+                    if (result.getStatus() == Status.Error) {
+                        AndroidTool.showAnsyTost(result.getMessage(), Status.Error);
+                    } else {
+                        //检查宗地编码有没有重复的，有的话，不能保存
+                        addZJDGraphic(mapPoint, zjd);
+                        AndroidTool.showAnsyTost("保存成功：" + zjd.getZDNUM(), Status.Success);
                     }
                 }
             });
@@ -358,9 +537,16 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
          * @param mapPoint
          */
         private void lookMessage(Point mapPoint) {
-            List<ZJD> zjds =  findGraphics(mapPoint, graphicsLayer);
+
+            List<ZJD> zjds = findGraphics(mapPoint, graphicsLayer);
+            PhotoService.addNativePhoto(zjds);
             if (!Tool.isEmpty(zjds)) {
-                MapDKDialog zjdDialog = MapDKDialog.newInstance(zjds,null);
+                MapDKDialog zjdDialog = MapDKDialog.newInstance(this.zjds, zjds, new MyCallback() {
+                    @Override
+                    public void call(ResultData result) {
+
+                    }
+                });
                 zjdDialog.show(getFragmentManager(), "zjddialog");
             }
         }
@@ -381,13 +567,14 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
             for (int i = 0; i < ids.length; i++) {
                 Object obj = graphicsLayer.getGraphic(ids[i]).getAttributeValue("zjd");
                 if (obj != null) {
-                    ZJD zjd = Tool.JsonToObject((String) obj,ZJD.class);
+                    ZJD zjd = Tool.JsonToObject((String) obj, ZJD.class);
                     zjds.add(zjd);
                 }
             }
             return zjds;
         }
     }
+
 
     /**
      * 查看被选择的面
@@ -406,7 +593,12 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
                     List<Map<String, Object>> dksMap = lookMessage(mapPoint, featureLayer);
                     List<ZJD> zjds = ArcgisTool.FeatureResultToObj(dksMap, ZJD.class);
                     if (!Tool.isEmpty(zjds)) {
-                        MapDKDialog zjdDialog = MapDKDialog.newInstance(zjds);
+                        MapDKDialog zjdDialog = MapDKDialog.newInstance(this.zjds, zjds, new MyCallback() {
+                            @Override
+                            public void call(ResultData result) {
+
+                            }
+                        });
                         zjdDialog.show(getFragmentManager(), "zjddialog");
                     }
                 } catch (Exception e) {

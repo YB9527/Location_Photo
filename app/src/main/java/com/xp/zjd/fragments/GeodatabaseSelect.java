@@ -12,7 +12,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xp.R;
-import com.xp.common.tools.DataTool;
+
+import com.xp.common.tools.DateTool;
 import com.xp.common.tools.FileTool;
 import com.xp.common.tools.ReflectTool;
 import com.xp.zjd.po.FileSelect;
@@ -133,7 +134,7 @@ public class GeodatabaseSelect {
             viewHolder.cb_isselect.setChecked(fileSelect.getIsselect().booleanValue());
             double size = fileSelect.getFileSize();
             viewHolder.tv_file_size.setText(String.format("%.2f", size) + "M");
-            viewHolder.tv_file_createdate.setText(DataTool.dataFormat(fileSelect.getFileCreatedate()));
+            viewHolder.tv_file_createdate.setText(DateTool.dataFormat(fileSelect.getFileCreatedate()));
 
             viewHolder.cb_isselect.setTag(fileSelect);
             viewHolder.cb_isselect.setOnClickListener(new View.OnClickListener() {

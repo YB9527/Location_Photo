@@ -130,29 +130,34 @@ public class AndroidTool {
      * @param tip
      */
     public static void showAnsyTost(final String tip) {
-        showAnsyTost(tip,Status.Other);
+        showAnsyTost(tip, Status.Other);
     }
 
     /**
      * 异步弹出提示窗口
+     *
      * @param tip
      * @param status 消息状态
      */
-    public static void showAnsyTost(final String tip,final Status status ) {
+    public static void showAnsyTost(final String tip, final Status status) {
         getMainActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                showToast(tip,Status.Other);
+                showToast(tip, Status.Other);
             }
         });
     }
 
     /**
-     *弹出提示窗口
+     * 弹出提示窗口
+     *
      * @param tip
      * @param status 消息状态
      */
     public static void showToast(String tip, Status status) {
-        Toast.makeText(getMainActivity(), tip, Toast.LENGTH_SHORT).show();
+        if (!Tool.isEmpty(tip)) {
+            Toast.makeText(getMainActivity(), tip, Toast.LENGTH_SHORT).show();
+        }
+
     }
 }

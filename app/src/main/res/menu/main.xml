@@ -9,11 +9,17 @@
     <item
         android:id="@+id/set_current_xzqy"
         android:orderInCategory="100"
-        android:title="设置行政区域"
+        android:title="行政区域设置"
         app:showAsAction="never" />
     <item
         android:id="@+id/set_map"
         android:orderInCategory="100"
-        android:title="map设置"
+        android:title="地图设置"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/set_user"
+        android:orderInCategory="100"
+        android:title="用户设置"
+        app:showAsAction="never" />
+
 </menu>

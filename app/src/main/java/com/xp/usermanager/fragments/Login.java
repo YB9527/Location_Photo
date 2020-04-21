@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.xp.R;
+import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.RedisTool;
 import com.xp.common.tools.Tool;
 import com.xp.usermanager.po.User;
@@ -43,14 +44,18 @@ public class Login extends Fragment implements View.OnClickListener {
             tv_account.setText(redisUser.getAccount());
             tv_password.setText(redisUser.getPassword());
         }
+        //注册账号按钮
+        view.findViewById(R.id.btu_registAccount).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btu_submit:
-
                 login();
+                break;
+            case R.id.btu_registAccount:
+                AndroidTool.replaceFrameLayout(new Regist());
                 break;
             default:
                 break;

@@ -88,11 +88,6 @@ public class PhotosFragment extends Fragment {
         Button addphoto = view.findViewById(R.id.btu_cbd_photo_add);
         addphoto.setOnClickListener(new AddPhotoClickListener());
 
-        TextView tv_zdnum = view.findViewById(R.id.tv_zdnum);
-
-        tv_zdnum.setText(zjd.getZDNUM());
-        TextView tv_quanli = view.findViewById(R.id.tv_quanli);
-        tv_quanli.setText(zjd.getQUANLI());
 
         ListView listView = view.findViewById(R.id.cbd_listview_photoshow);
         cbdPhotoAdpater = new CBDPhotoAdpater(Tool.copyList(zjd.getPhotos()));
@@ -208,6 +203,7 @@ public class PhotosFragment extends Fragment {
                             if (state == 0) {
                                 FileTool.copyFile(path, desc);
                                 photo.setZjd(zjd);
+                                zjd.getPhotos().add(photo);
                                 cbdPhotoAdpater.AddPhoto(photo);
                             } else {
                                 //如果照片已经存在数据库，那么更新后台
