@@ -33,6 +33,8 @@ import com.xp.R;
 import com.xp.common.fragment.TDTFragment;
 import com.xp.common.tools.RedisTool;
 import com.xp.common.tools.Tool;
+import com.xp.usermanager.fragments.Login;
+import com.xp.usermanager.fragments.UserSetting;
 import com.xp.usermanager.po.User;
 import com.xp.usermanager.service.UserService;
 import com.xp.xzqy.fragments.XZDMFragment;
@@ -131,13 +133,17 @@ public class MainActivity extends AppCompatActivity
                 //设置行政区域
                 AndroidTool.replaceFrameLayout(new XZDMFragment());
                 break;
-            case R.id.action_settings:
+            case R.id.set_user_change:
                 //软件设置
-                AndroidTool.replaceFrameLayout(new SetingsFragment());
+                AndroidTool.replaceFrameLayout(new Login());
                 break;
             case R.id.set_map:
                 //地图设置
                 AndroidTool.replaceFrameLayout(new MapSetting());
+                break;
+            case R.id.set_user:
+                //地图设置
+                AndroidTool.replaceFrameLayout(new UserSetting());
                 break;
             default:
                 break;

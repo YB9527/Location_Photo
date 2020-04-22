@@ -96,7 +96,8 @@ public class UserService {
                     } else if (resultData.getStatus() == Status.Error) {
                         AndroidTool.showAnsyTost(resultData.getMessage());
                     } else {
-                        UserService.setUser((User) resultData.getObject());
+                        User user = (User) resultData.getObject();
+                        UserService.setUser(user);
                         RedisTool.updateRedis(redisLoginUser, user);
                         //请求选中的行政代码
                         XZDMService.RequestWEB_SelectXZDMs();
@@ -105,9 +106,10 @@ public class UserService {
                         MapSetting.findRedisLoadTDT();
 
                         //转到欢迎界面
-                        //InitFragment initFragment = new InitFragment();
-                        //AndroidTool.replaceFrameLayout(initFragment);
-                        AndroidTool.replaceFrameLayout(new Regist());
+                        InitFragment initFragment = new InitFragment();
+                        AndroidTool.replaceFrameLayout(initFragment);
+                        AndroidTool.showAnsyTost("欢迎："+user.getNickName()+" 登录",Status.Success);
+                        //AndroidTool.replaceFrameLayout(new Regist());
                     }
                     AndroidTool.closeProgressBar();
                 }

@@ -3,16 +3,26 @@ package com.xp.usermanager.po;
 
 
 public enum Level {
-    zero(0,"最高"),
-    one(1,"一般"),
-    two(2,"查看"),
-    three(3,"只能查看自己");
+    manager(0, "管理员","manager"),
+    employee(1, "工作人员","employee"),
+    government(2, "政府人员","government"),
+    peasant(3, "农户","peasant");
 
-    private String value;
+    private String describe;
     private int levelNum;
-    private Level(int levelNum,String value) {
-        this.value = value;
-        this.levelNum =levelNum;
+    private String name;
+    private Level(int levelNum, String describe,String name) {
+        this.describe = describe;
+        this.levelNum = levelNum;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getLevelNum() {
@@ -23,11 +33,25 @@ public enum Level {
         this.levelNum = levelNum;
     }
 
-    public String getValue() {
-        return value;
+    public String getDescribe() {
+        return describe;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setDescribe(String describe) {
+        this.describe = describe;
+    }
+
+    /**
+     * 转 json 时 使用
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+        return "{" +
+                "describe:'" + describe + '\'' +
+                ", levelNum:" + levelNum +
+                ", name:'" + name + '\'' +
+                '}';
     }
 }

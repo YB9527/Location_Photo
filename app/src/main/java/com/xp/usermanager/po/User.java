@@ -30,7 +30,7 @@ public class User {
     @Expose
     private Date registDate;
     /**
-     * 角色级别
+     * 用户级别
      */
     @Expose
     private Level level;

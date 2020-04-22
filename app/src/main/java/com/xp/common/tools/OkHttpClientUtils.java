@@ -248,5 +248,19 @@ public class OkHttpClientUtils {
             }
         });
     }
+    public static <T> void httpPost(final String url, final String mark, final T t,final Type type,final MyCallback myCallback) {
+        httpPost(url, mark, t, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                myCallback.call(getConnectOutTimeResult());
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                ResultData resultData = resposeToResultData(response,type);
+                myCallback.call(resultData);
+            }
+        });
+    }
 }
 

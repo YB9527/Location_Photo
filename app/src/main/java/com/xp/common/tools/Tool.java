@@ -74,7 +74,7 @@ public class Tool {
      * @return
      */
     public static String getHostAddress() {
-        String hostAddress = "http://192.168.2.162:3334/";
+        String hostAddress = "http://192.168.3.3:3334/";
         return hostAddress;
     }
 
