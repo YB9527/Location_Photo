@@ -18,6 +18,8 @@ import com.xp.common.po.Status;
 import com.xp.zjd.photo.PhotoService;
 import com.xp.zjd.po.ZJD;
 import com.xp.common.tools.AndroidTool;
+import com.xp.zjd.service.ArcgisService;
+import com.xp.zjd.service.ZJDService;
 
 
 import java.util.ArrayList;
@@ -64,7 +66,12 @@ public class ZJDTableAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return datas != null ? datas.get(position).getId() : -1;
+        return position;
+    }
+
+    public void removeItem(ZJD zjd){
+        this.datas.remove(zjd);
+        this.notifyDataSetChanged();
     }
 
     @Override
@@ -161,7 +168,18 @@ public class ZJDTableAdapter extends BaseAdapter {
                 public void call(ResultData result) {
                     if (result.getStatus() == Status.Error) {
                         AndroidTool.showAnsyTost(result.getMessage(), Status.Error);
-                    } else {
+                    } else  if(result.getStatus() == Status.Success){
+                        if(result.getMessage().equals("2")){
+                            //删除地块
+                            ZJDService.deleteZJD(zjd, new MyCallback() {
+                                @Override
+                                public void call(ResultData resultData) {
+                                    ZJDTableAdapter.this.removeItem(zjd);
+                                }
+                            });
+                        }else if(result.getMessage().equals("1")){
+                            //修改地块
+                        }
                         //检查宗地编码有没有重复的，有的话，不能保存
                         //AndroidTool.showAnsyTost("保存成功：" + zjd.getZDNUM(), Status.Success);
                     }

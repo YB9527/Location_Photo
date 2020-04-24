@@ -89,14 +89,24 @@ public class MainActivity extends AppCompatActivity
 
 
         //检查账号是否登录
-        String redisUser = RedisTool.findRedis(UserService.redisLoginUser);
-        User user = Tool.JsonToObject(redisUser, User.class);
-        UserService.checkIfLogin(user);
+       String redisUser = RedisTool.findRedis(UserService.redisLoginUser);
+       if(Tool.isEmpty(redisUser)){
+           UserService.checkIfLogin(null);
+       }else{
+           User user = Tool.JsonToObject(redisUser, User.class);
+           user.setRegistDate(null);
+           UserService.checkIfLogin(user);
+       }
+       ZJDArcgisMap zjdArcgisMap =ZJDArcgisMap.getInstance();
+
+
+
+
 
         //如果 无离线数据库
-        ZJDService.downloadGeodatase(true);
+        //ZJDService.downloadGeodatase(true);
 
-
+        //AndroidTool.replaceFrameLayout(new ZJDArcgisMap());
 
 
     }
@@ -170,10 +180,9 @@ public class MainActivity extends AppCompatActivity
                 AndroidTool.replaceFrameLayout(new TDTFragment());
                 break;
             case R.id.zjd_arcgismap_item:
-                AndroidTool.replaceFrameLayout(new ZJDArcgisMap());
+                AndroidTool.replaceFrameLayout( ZJDArcgisMap.getInstance());
                 break;
         }
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

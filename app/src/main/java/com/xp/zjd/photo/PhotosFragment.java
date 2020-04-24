@@ -117,7 +117,6 @@ public class PhotosFragment extends Fragment {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
                   /* 7.0系统开始，直接使用本地真实路径的Uri被认为是不安全的，会抛 出一个FileUriExposedException异常。
                    而FileProvider则是一种特殊的内容提供器，它使用了和内 容提供器类似的机制来对数据进行保护，
                    可以选择性地将封装过的Uri共享给外部，从而提高了 应用的安全性*/
@@ -306,11 +305,11 @@ public class PhotosFragment extends Fragment {
 
             viewHolder.cbd_photo_filename.setText(photo.getName());
             viewHolder.btu_photo_delete.setOnClickListener(this);
-            if (photo.getUpload()) {
-                viewHolder.cbd_upload_photo.setVisibility(View.INVISIBLE);//上传的话，就隐藏 上传按钮
+            //如果是 服务器的地块，且还没有上传， 就显示按钮
+            if (!photo.getUpload() && (photo.getZjd() == null || Tool.isTrue(photo.getZjd().getUpload()))) { //必须时web端的地块才可以
+                viewHolder.cbd_upload_photo.setVisibility(View.VISIBLE);
             } else {
-
-                viewHolder.cbd_upload_photo.setVisibility(View.VISIBLE);//上传的话，就隐藏 上传按钮
+                viewHolder.cbd_upload_photo.setVisibility(View.INVISIBLE);
             }
             viewHolder.cbd_edit_filename.setOnClickListener(this);
             viewHolder.cbd_upload_photo.setOnClickListener(this);
@@ -407,6 +406,8 @@ public class PhotosFragment extends Fragment {
                 case R.id.cbd_edit_filename:
                     editName(photo, 1);
                     break;
+                default:
+                    break;
             }
         }
 
@@ -421,8 +422,8 @@ public class PhotosFragment extends Fragment {
             OkHttpClient client = OkHttpClientUtils.getClient();
             MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
             RequestBody requestBody = new MultipartBody.Builder()
-                    .addFormDataPart("photo", photo.toString())
-                    .addFormDataPart("zjd", zjd.toString())
+                    .addFormDataPart("photo", Tool.objectToJson(photo))
+                    .addFormDataPart("zjd", Tool.objectToJson(zjd))
                     .addFormDataPart("file", file.getName(), RequestBody.create(MEDIA_TYPE_MARKDOWN, file))
                     .build();
             Request request = new Request.Builder()

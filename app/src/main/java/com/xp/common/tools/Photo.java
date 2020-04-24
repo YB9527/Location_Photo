@@ -3,6 +3,8 @@ package com.xp.common.tools;
 import com.google.gson.annotations.Expose;
 import com.xp.zjd.po.ZJD;
 
+import java.util.Date;
+
 /**
  * Created by Administrator on 2020/3/31.
  */
@@ -19,21 +21,58 @@ public class Photo {
     private Boolean isUpload;
 
     /**
-     * 拍照事件
+     * 照片纬度
      */
     @Expose
-    private String createDate;
+    private Double latitude;
+    /**
+     * 照片经度
+     */
+    @Expose
+    private Double longitude;
+    /**
+     * 拍照时间
+     */
+    @Expose
+    private Date createDate;
     private ZJD zjd;
+
     /**
      * 是否已经上传文件
      */
 
-    public Photo(String path,boolean isUpload) {
+    public Photo(String path, boolean isUpload) {
         setPath(path);
-        this.isUpload =isUpload;
+        this.isUpload = isUpload;
+        this.createDate = new Date();
     }
-    public Photo() {
 
+    public Photo() {
+        this.createDate = new Date();
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
     }
 
     public ZJD getZjd() {
@@ -53,7 +92,7 @@ public class Photo {
     }
 
     public Boolean getUpload() {
-        if(isUpload == null){
+        if (isUpload == null) {
             return false;
         }
         return isUpload;
@@ -78,8 +117,8 @@ public class Photo {
     }
 
     public String getPath() {
-        if(path == null){
-            return  "";
+        if (path == null) {
+            return "";
         }
         return path;
     }
@@ -99,6 +138,7 @@ public class Photo {
         }
         return super.equals(obj);
     }
+
     public int hashCode() {//hashCode主要是用来提高hash系统的查询效率。当hashCode中不进行任何操作时，可以直接让其返回 一常数，或者不进行重写。
         int result = getPath().hashCode();
         result = 29 * result + getPath().hashCode();

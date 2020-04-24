@@ -143,16 +143,14 @@ public class ZJDService {
 
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-                    ResultData result = new ResultData(Status.Success, "成功", response);
+                    ResultData result = new ResultData(Status.Success, "1", response);
                     myCallback.call(result);
                 }
             });
         } else {
             //保存 //更新本地地块
             RedisTool.saveRedis("zjd_" + zjd.getZDNUM(), zjd);
-
-            myCallback.call(new ResultData(Status.Success, "成功"));
-
+            myCallback.call(new ResultData(Status.Success, "1"));
 
         }
     }
@@ -184,4 +182,31 @@ public class ZJDService {
     public static void findWebZJDs(MyCallback callback) {
         OkHttpClientUtils.httpPostContainsDJZQDM_User(getURLBasic() + "findzjdsbyxzdmanduser",callback);
     }
+
+    /**
+     * 删除宅基地
+     * @param zjd
+     * @param callback
+     */
+    public static void deleteZJD(ZJD zjd, MyCallback callback) {
+
+        if(Tool.isTrue( zjd.getUpload())){
+            //服务器地块
+
+        }else{
+            //本地地块
+            deleteLocalZJD(zjd);
+        }
+
+    }
+
+    /**
+     * 删除本地 地块
+     * @param zjd
+     */
+    private static void deleteLocalZJD(ZJD zjd) {
+        RedisTool.deleteRedisByMark("zjd_"+zjd.getZDNUM());
+        //删除图片
+    }
+
 }

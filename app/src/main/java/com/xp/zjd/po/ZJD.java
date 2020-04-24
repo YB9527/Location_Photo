@@ -1,5 +1,6 @@
 package com.xp.zjd.po;
 
+import com.esri.core.map.Graphic;
 import com.google.gson.annotations.Expose;
 import com.xp.common.tools.Photo;
 import com.xp.usermanager.po.User;
@@ -37,6 +38,11 @@ public class ZJD {
     private Boolean isUpload;
     @Expose
     private List<ZJDGeometry> zjdGeometry;//考虑多部件情况
+
+
+
+
+
 
     public ZJD(String ZDNUM, String QUANLI) {
         this.ZDNUM = ZDNUM;

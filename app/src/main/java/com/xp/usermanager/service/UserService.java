@@ -4,6 +4,7 @@ import com.xp.common.po.Status;
 import com.xp.usermanager.fragments.Regist;
 import com.xp.zjd.fragments.MapSetting;
 import com.xp.zjd.fragments.ZJDArcgisMap;
+import com.xp.zjd.fragments.ZJDFragment;
 import com.xp.zjd.init.InitFragment;
 import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.OkHttpClientUtils;
@@ -107,9 +108,9 @@ public class UserService {
 
                         //转到欢迎界面
                         InitFragment initFragment = new InitFragment();
-                        AndroidTool.replaceFrameLayout(initFragment);
+                        //AndroidTool.replaceFrameLayout(initFragment);
                         AndroidTool.showAnsyTost("欢迎："+user.getNickName()+" 登录",Status.Success);
-                        //AndroidTool.replaceFrameLayout(new Regist());
+                        AndroidTool.replaceFrameLayout(new ZJDFragment());
                     }
                     AndroidTool.closeProgressBar();
                 }

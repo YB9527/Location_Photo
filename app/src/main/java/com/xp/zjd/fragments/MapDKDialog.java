@@ -49,6 +49,7 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
     private ProgressBar progressBar;
     private MyCallback myCallback;
     private List<ZJD> zjdsInDatase;
+
     public static MapDKDialog newInstance(List<ZJD> zjdsInDatase, List<ZJD> zjds) {
 
         return newInstance(zjdsInDatase, zjds, null);
@@ -65,8 +66,6 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
         fragment.myCallback = myCallback;
         return fragment;
     }
-
-
 
 
     @Override
@@ -150,6 +149,7 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
         }*/
     Button btu_submit;
     Button btu_cancel;
+    Button btu_delete;
 
     private void initButton() {
         progressBar = view.findViewById(R.id.wait);
@@ -160,6 +160,8 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
         btu_submit.setOnClickListener(this);
         btu_cancel = view.findViewById(R.id.btu_cancel);
         btu_cancel.setOnClickListener(this);
+        btu_delete = view.findViewById(R.id.btu_delete);
+        btu_delete.setOnClickListener(this);
 
         btuNext.setEnabled(false);
         btuLast.setEnabled(true);
@@ -195,6 +197,14 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
 
     private void lookdk(int i) {
         ZJD zjd = this.zjds.get(i);
+        if (Tool.isTrue(zjd.getUpload())) {
+            btu_delete.setVisibility(View.GONE);
+            et_zdnum.setFocusable(false);
+            et_quanli.setFocusable(false);
+        } else {
+            btu_delete.setVisibility(View.VISIBLE);
+
+        }
         String zdnum = zjd.getZDNUM();
         if (!Tool.isEmpty(zdnum)) {
             et_zdnum.setText(zdnum);
@@ -228,17 +238,17 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
         //如果上传了，才查看服务器中的地块
         if (zjd.getUpload()) {
             progressBar.setVisibility(View.VISIBLE);
-            OkHttpClientUtils.httpGet(ZJDService.getURLBasic() + "findbyzdnum?ZDNUM=" + 2, new Callback() {
+            OkHttpClientUtils.httpGet(ZJDService.getURLBasic() + "findbyzdnum?ZDNUM=" + zjd.getZDNUM(), new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                    progressBar.setVisibility(View.GONE);
                 }
 
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
                     String reponseStr = response.body().string();
                     ZJD zjd = Tool.getGson().fromJson(reponseStr, ZJD.class);
-
+                    progressBar.setVisibility(View.GONE);
                 }
             });
         } else {
@@ -274,7 +284,28 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
             case R.id.btu_cancel:
                 cancel();
                 break;
+            case R.id.btu_delete:
+                delete();
+                break;
+            default:
+                break;
         }
+    }
+
+    /**
+     * 删除 宅基地 删除 是2
+     */
+    private void delete() {
+        AndroidTool.showDilog("确定要是删除：" + zjds.get(currentIndex).getZDNUM() + " 吗？", new MyCallback() {
+            @Override
+            public void call(ResultData resultData) {
+                if (resultData.getStatus() == Status.Success) {
+                   MapDKDialog.this.getDialog().dismiss();
+                    myCallback.call(new ResultData(Status.Success, "2"));
+                }
+            }
+        });
+
     }
 
     /**
@@ -288,7 +319,7 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
     }
 
     /**
-     * 提交文字修改
+     * 提交文字修改 修改是 1
      */
     private void submit() {
         ZJD zjd = zjds.get(currentIndex);
@@ -297,17 +328,16 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
             AndroidTool.showToast("宗地没有编码，不能保存", Status.Error);
             return;
         }
+
         zjd.setZDNUM(et_zdnum.getText().toString());
         zjd.setQUANLI(et_quanli.getText().toString());
         zjd.setBz(et_bz.getText().toString());
         try {
             ZJDService.updateDK(zjd, myCallback);
             this.getDialog().dismiss();
+            AndroidTool.showToast("保存成功", Status.Error);
         } catch (ZJDException e) {
             AndroidTool.showToast(e.getMessage(), Status.Error);
         }
-
     }
-
-
 }

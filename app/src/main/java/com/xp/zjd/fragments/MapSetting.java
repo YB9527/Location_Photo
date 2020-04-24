@@ -18,6 +18,7 @@ import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.RedisTool;
 import com.xp.common.tools.Tool;
 import com.xp.zjd.po.FileSelect;
+import com.xp.zjd.service.ArcgisService;
 import com.xp.zjd.service.ZJDService;
 
 import java.io.File;
@@ -28,16 +29,12 @@ import java.util.List;
  */
 public class MapSetting extends Fragment implements View.OnClickListener {
     private View view;
-    private String redisMapTileSetting = "mapTileSetting";
-    private String redisMapGeodatabaseSetting = "mapGeodatabaseSetting";
-    private static String redisMapLoadTDT = "mapLoadTDT";
+
     public static  Boolean isLoadTDT ;
     private CheckBox cb_loadTDT;
     public static void findRedisLoadTDT() {
-        isLoadTDT = RedisTool.findRedis(redisMapLoadTDT,Boolean.class);
-        if(isLoadTDT == null){
-            isLoadTDT = false;
-        }
+        isLoadTDT = ArcgisService.findRedisLoadTDT();
+
     }
 
     @Nullable
@@ -57,9 +54,9 @@ public class MapSetting extends Fragment implements View.OnClickListener {
     private void init() {
 
         //查找本地数据中的记录
-        List<FileSelect> tileFileSelected = RedisTool.findRedis(redisMapTileSetting,new TypeToken<List<FileSelect>>(){}.getType());
+        List<FileSelect> tileFileSelected = ArcgisService.getTileFileSelected();
         tileSelect = new TileSelect(view,tileFileSelected);
-        List<FileSelect> geodatabaseFileSelected = RedisTool.findRedis(redisMapGeodatabaseSetting,new TypeToken<List<FileSelect>>(){}.getType());
+        List<FileSelect> geodatabaseFileSelected = ArcgisService.getGeodatabaseFileSelected();
         if(!Tool.isEmpty(geodatabaseFileSelected)){
             geodatabaseSelect = new GeodatabaseSelect(view,geodatabaseFileSelected);
         }
@@ -108,12 +105,18 @@ public class MapSetting extends Fragment implements View.OnClickListener {
     private void btu_submit() {
 
         if(geodatabaseSelect != null){
-            RedisTool.updateRedis(redisMapGeodatabaseSetting, FileSelect.getSelectedFile(geodatabaseSelect.fileSelects) );
+            ArcgisService.updateRedisMapGeodatabaseSetting( FileSelect.getSelectedFile(geodatabaseSelect.fileSelects));
         }
-        RedisTool.updateRedis(redisMapTileSetting,FileSelect.getSelectedFile(tileSelect.fileSelects));
+
+        if(tileSelect != null){
+            ArcgisService.updateRedisTileSelectSetting( FileSelect.getSelectedFile(tileSelect.fileSelects));
+
+        }
+        ArcgisService.updateRedisMapLoadTDT(cb_loadTDT.isChecked());
         AndroidTool.showToast("保存成功", Status.Success);
-        isLoadTDT =  cb_loadTDT.isChecked();
-        RedisTool.updateRedis(redisMapLoadTDT,isLoadTDT);
+
+
+
     }
 
     /**

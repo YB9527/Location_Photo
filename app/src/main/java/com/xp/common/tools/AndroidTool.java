@@ -12,6 +12,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.xp.R;
+import com.xp.common.po.MyCallback;
+import com.xp.common.po.ResultData;
 import com.xp.common.po.Status;
 
 /**
@@ -104,21 +106,22 @@ public class AndroidTool {
     /**
      * 两个按钮的 dialog
      */
-    public static void showDilog(String tip) {
+    public static void showDilog(String tip, final MyCallback callback) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity).setIcon(R.mipmap.ic_launcher).setTitle("提示")
                 .setMessage(tip).setPositiveButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         //ToDo: 你想做的事情
-                        Toast.makeText(activity, "取消", Toast.LENGTH_LONG).show();
+                        callback.call(new ResultData(Status.Error, ""));
+                        dialogInterface.dismiss();
                     }
                 }).setNegativeButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         //ToDo: 你想做的事情
-                        Toast.makeText(activity, "确定", Toast.LENGTH_LONG).show();
                         dialogInterface.dismiss();
+                        callback.call(new ResultData(Status.Success, ""));
                     }
                 });
         builder.create().show();

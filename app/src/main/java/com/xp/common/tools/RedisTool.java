@@ -188,4 +188,14 @@ public class RedisTool {
         return  jsons;
 
     }
+
+    /**
+     * 根据mark 删除地块
+     * @param mark
+     */
+    public static int deleteRedisByMark(String mark) {
+        SQLiteDatabase db = getSQLiteDatabase();
+        int count = db.delete("redis","mark = ?",new String[]{mark});
+        return count;
+    }
 }

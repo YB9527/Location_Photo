@@ -1,9 +1,16 @@
 package com.xp.zjd.fragments;
 
 
+import android.Manifest;
+import android.Manifest.permission;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,6 +51,10 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static android.Manifest.permission.*;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static androidx.core.content.PermissionChecker.checkSelfPermission;
+
 /**
  * 承包地地块页面
  */
@@ -79,7 +90,11 @@ public class ZJDFragment extends Fragment implements View.OnClickListener {
     public ZJDTableAdapter getAdapter(View view) {
         AndroidTool.showProgressBar();
         final ZJDTableAdapter adapter = new ZJDTableAdapter(getFragmentManager(), view.getContext());
+        //先添加本地
+        List<ZJD> localZJDs = ZJDService.findLoaclZJDs();
+        adapter.addDatas(localZJDs);
 
+        //添加web端的
         OkHttpClientUtils.httpPostAndDJZQDM(ZJDService.getURLBasic() + "findbydjzqdm", new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
