@@ -99,6 +99,9 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
     private GraphicsLayer graphicsLayer;
     //临时图形 容器
     private GraphicsLayer drawGraphicsLayer;
+    //文字 容器
+    private GraphicsLayer textGraphicsLayer;
+    private Map<String, Integer> textGraphicsMap;
     //点集合
     private List<Point> pointList = new ArrayList<>();
     ArcGISLocalTiledLayer localTiledLayer;
@@ -227,6 +230,10 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         mMapView.addLayer(graphicsLayer);
         drawGraphicsLayer = new GraphicsLayer();
         mMapView.addLayer(drawGraphicsLayer);
+        textGraphicsLayer = new GraphicsLayer();
+        mMapView.addLayer(textGraphicsLayer);
+        textGraphicsMap = new HashMap<String, Integer>();
+
 
         if (ArcgisService.findRedisLoadTDT()) {
             /**
@@ -305,7 +312,6 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         ) {
             Geometry geometry = ArcgisTool.jsonToGeometry(zjdGeometry.getGeometry());
             Graphic graphic = addZJDGraphic(geometry, zjd);
-
         }
     }
 
@@ -344,20 +350,29 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         int hasePhoto = Color.GREEN;
         int noPhoto = Color.RED;
 
+        String lable = getMapLable(zjd);
+        Point lablePoint = null;
         Map<String, Object> map = new HashMap<>();
         map.put("zjd", Tool.objectToJson(zjd));
         Graphic graphic = null;
+        int labelColor;
+        if (zjd.getPhotos().size() > 0) {
+            labelColor = hasePhoto;
+        } else {
+            labelColor = noPhoto;
+        }
         switch (geometry.getType()) {
             case POINT:
                 if (zjd.getPhotos().size() > 0) {
                     graphic = new Graphic(geometry, new SimpleMarkerSymbol
-                            (hasePhoto, 3, SimpleMarkerSymbol.STYLE.CIRCLE), map);
+                            (hasePhoto, 8, SimpleMarkerSymbol.STYLE.CIRCLE), map);
 
                 } else {
                     graphic = new Graphic(geometry, new SimpleMarkerSymbol
-                            (noPhoto, 3, SimpleMarkerSymbol.STYLE.CIRCLE), map);
+                            (noPhoto, 8, SimpleMarkerSymbol.STYLE.CIRCLE), map);
                 }
 
+                lablePoint = (Point) geometry;
                 break;
             case POLYLINE:
                 if (zjd.getPhotos().size() > 0) {
@@ -365,6 +380,7 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
                 } else {
                     graphic = new Graphic(geometry, new SimpleLineSymbol(noPhoto, 3, SimpleLineSymbol.STYLE.SOLID), map);
                 }
+                lablePoint = ((Polyline) geometry).getPoint(0);
                 break;
             case POLYGON:
                 SimpleLineSymbol lineSymbol;
@@ -378,6 +394,7 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
                 }
                 fillSymbol.setOutline(lineSymbol);
                 graphic = new Graphic(geometry, fillSymbol, map);
+                lablePoint = ((Polygon) geometry).getPoint(0);
                 break;
             default:
                 break;
@@ -386,8 +403,27 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         if (graphic != null) {
             graphicsLayer.addGraphic(graphic);
         }
+        int id = graphic.getUid();
+        addText(zjd.getZDNUM(), lablePoint, lable, labelColor);
         return graphic;
 
+    }
+
+    /**
+     * 得到宅基地标注的内容
+     *
+     * @param zjd
+     * @return
+     */
+    private String getMapLable(ZJD zjd) {
+        String lable = "";
+        if (!Tool.isEmpty(zjd.getZDNUM())) {
+            lable = zjd.getZDNUM() + "\r\n";
+        }
+        if (!Tool.isEmpty(zjd.getQUANLI())) {
+            lable = lable + zjd.getQUANLI();
+        }
+        return lable;
     }
 
     /**
@@ -666,6 +702,10 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
                                 for (Graphic graphic : zjd.getGraphics()) {
                                     //1、删除map上的图形
                                     graphicsLayer.removeGraphic(graphic.getUid());
+                                    ZJD oldZJD = graphicToZJD(graphic);
+                                    if (oldZJD != null) {
+                                        removeTextGraphic(oldZJD.getZDNUM());
+                                    }
                                 }
                                 if (result.getMessage().equals("1")) {
                                     //更新地块，2、再map上添加图形
@@ -699,14 +739,36 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
                 //int id = ids[i];
                 //int uid = graphic.getUid();
                 //long _id = graphic.getId();
-                Object obj = graphic.getAttributeValue("zjd");
-                if (obj != null) {
-                    ZJD zjd = Tool.JsonToObject((String) obj, ZJD.class);
+                ZJD zjd = graphicToZJD(graphic);
+                if (zjd != null) {
                     zjd.getGraphics().add(graphic);
                     zjds.add(zjd);
                 }
             }
             return zjds;
+        }
+    }
+
+    /**
+     * graphic 转宅基地
+     *
+     * @param graphic
+     * @return
+     */
+    public ZJD graphicToZJD(Graphic graphic) {
+        Object obj = graphic.getAttributeValue("zjd");
+        if (obj != null) {
+            ZJD zjd = Tool.JsonToObject((String) obj, ZJD.class);
+            return zjd;
+        }
+        return null;
+    }
+
+    private void removeTextGraphic(String zdnum) {
+        Integer graphicID = textGraphicsMap.get(zdnum);
+        if (graphicID != null && graphicID != -1) {
+            textGraphicsMap.remove(zdnum);
+            textGraphicsLayer.removeGraphic(graphicID);
         }
     }
 
@@ -791,11 +853,14 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
     /**
      * 添加文本
      */
-    private void addText(Point mapPoint) {
-        TextSymbol textSymbol = new TextSymbol(5, "I is text", Color.RED);
-        textSymbol.setSize(5);
+    private void addText(String zdnum, Point mapPoint, String lable, int lableColor) {
+        TextSymbol textSymbol = new TextSymbol(10, lable, lableColor);
+        textSymbol.setSize(10);
         Graphic textGraphic = new Graphic(mapPoint, textSymbol);
-        graphicsLayer.addGraphic(textGraphic);
+        int id = textGraphicsLayer.addGraphic(textGraphic);
+        //textGraphic = graphicsLayer.getGraphic(id);
+        textGraphicsMap.put(zdnum, id);
+
     }
 
     /**
