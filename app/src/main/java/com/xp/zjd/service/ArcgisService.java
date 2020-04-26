@@ -1,5 +1,8 @@
 package com.xp.zjd.service;
 
+import android.location.Location;
+
+import com.esri.android.map.LocationDisplayManager;
 import com.google.gson.reflect.TypeToken;
 import com.xp.common.po.ResultData;
 import com.xp.common.tools.AndroidTool;
@@ -110,4 +113,5 @@ public class ArcgisService {
         }
 
     }
+
 }

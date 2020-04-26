@@ -101,7 +101,7 @@
    <!-- <fragment
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-         android:name="com.xp.zjd.photo.PhotosFragment" >
+         android:name="com.xp.zjd.fragments.PhotosFragment" >
     </fragment>-->
 
 </LinearLayout>

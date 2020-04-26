@@ -110,7 +110,8 @@ public class UserService {
                         InitFragment initFragment = new InitFragment();
                         //AndroidTool.replaceFrameLayout(initFragment);
                         AndroidTool.showAnsyTost("欢迎："+user.getNickName()+" 登录",Status.Success);
-                        AndroidTool.replaceFrameLayout(new ZJDFragment());
+                        AndroidTool.replaceFrameLayout(initFragment);
+
                     }
                     AndroidTool.closeProgressBar();
                 }

@@ -10,7 +10,6 @@ import com.xp.common.tools.OkHttpClientUtils;
 import com.xp.common.tools.Photo;
 import com.xp.common.tools.RedisTool;
 import com.xp.common.tools.Tool;
-import com.xp.zjd.photo.PhotoService;
 import com.xp.zjd.po.ZJD;
 
 import org.jetbrains.annotations.NotNull;
@@ -132,7 +131,8 @@ public class ZJDService {
      * @param zjd
      * @param myCallback
      */
-    public static void updateDK(ZJD zjd, final MyCallback myCallback) throws ZJDException {
+    public static void updateDK( ZJD zjd, final MyCallback myCallback) throws ZJDException {
+
         if (zjd.getUpload()) {
             //更新服务器
             updateDKInServer(zjd, new Callback() {
@@ -149,9 +149,25 @@ public class ZJDService {
             });
         } else {
             //保存 //更新本地地块
-            RedisTool.saveRedis("zjd_" + zjd.getZDNUM(), zjd);
+            String dirZDNUM = zjd.getZDNUM();
+            //检查宅基地编码，是否变了
+            if(zjd.getPhotos().size() >0){
+                String path =  zjd.getPhotos().get(0).getPath();
+                String tem =  path.replace(PhotoService.getDKPhotoDir(),"");
+                 dirZDNUM = tem.substring(0,tem.indexOf("/")); // zjdDirRoot.
+                if(!dirZDNUM.equals(zjd.getZDNUM())){
+                    File file1 = new File( PhotoService.getDKPhotoDir() + dirZDNUM);
+                    //将原文件夹更改为A，其中路径是必要的。注意
+                   boolean bl = file1.renameTo(new File(PhotoService.getDKPhotoDir() + zjd.getZDNUM()));
+                    //修改照片路径
+                    for (Photo photo :zjd.getPhotos()){
+                        photo.setPath(photo.getPath().replace(PhotoService.getDKPhotoDir() + dirZDNUM,PhotoService.getDKPhotoDir() + zjd.getZDNUM()));
+                    }
+                }
+                RedisTool.deleteRedisByMark("zjd_" +dirZDNUM);
+            }
+            RedisTool.updateRedis("zjd_" +zjd.getZDNUM(), zjd);
             myCallback.call(new ResultData(Status.Success, "1"));
-
         }
     }
 
@@ -172,41 +188,75 @@ public class ZJDService {
      */
     public static List<ZJD> findLoaclZJDs() {
         List<ZJD> zjds = RedisTool.findListRedis("'zjd_%'", ZJD.class);
+        for (ZJD zjd : zjds) {
+            for (int i = 0; i < zjd.getPhotos().size(); i++) {
+                File file = new File(zjd.getPhotos().get(i).getPath());
+                if (!file.exists()) {
+                    zjd.getPhotos().remove(i);
+                    i--;
+                }
+            }
+        }
         return zjds;
     }
 
     /**
      * 找web 端的 地块
+     *
      * @return
      */
     public static void findWebZJDs(MyCallback callback) {
-        OkHttpClientUtils.httpPostContainsDJZQDM_User(getURLBasic() + "findzjdsbyxzdmanduser",callback);
+        OkHttpClientUtils.httpPostContainsDJZQDM_User(getURLBasic() + "findzjdsbyxzdmanduser", callback);
     }
 
     /**
      * 删除宅基地
+     *
      * @param zjd
      * @param callback
      */
     public static void deleteZJD(ZJD zjd, MyCallback callback) {
 
-        if(Tool.isTrue( zjd.getUpload())){
+        if (Tool.isTrue(zjd.getUpload())) {
             //服务器地块
-
-        }else{
+            deleteWebZJD(zjd, callback);
+        } else {
             //本地地块
             deleteLocalZJD(zjd);
+            callback.call(new ResultData(Status.Success, "成功"));
         }
 
     }
 
     /**
+     * 删除服务器上的地块
+     *
+     * @param zjd
+     * @param callback
+     */
+    private static void deleteWebZJD(ZJD zjd, MyCallback callback) {
+        //删除本地照片
+        int count = PhotoService.deleteLocalAllByZJD(zjd);
+        //删除web宅基地
+        OkHttpClientUtils.httpPost(getURLBasic() + "deletezjd", "po", zjd, null, callback);
+    }
+
+    /**
      * 删除本地 地块
+     *
      * @param zjd
      */
     private static void deleteLocalZJD(ZJD zjd) {
-        RedisTool.deleteRedisByMark("zjd_"+zjd.getZDNUM());
+        deleteReids( zjd.getZDNUM());
         //删除图片
+        int count = PhotoService.deleteLocalAllByZJD(zjd);
     }
 
+    /**
+     * 删除宅基地的 redis
+     * @param zdnum
+     */
+    public static void deleteReids(String zdnum) {
+        RedisTool.deleteRedisByMark("zjd_" + zdnum);
+    }
 }

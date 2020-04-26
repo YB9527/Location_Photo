@@ -97,8 +97,6 @@ public class MainActivity extends AppCompatActivity
            user.setRegistDate(null);
            UserService.checkIfLogin(user);
        }
-       ZJDArcgisMap zjdArcgisMap =ZJDArcgisMap.getInstance();
-
 
 
 

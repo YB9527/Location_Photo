@@ -165,6 +165,9 @@ public class OkHttpClientUtils {
 
             String resposeStr = response.body().string();
             ResultData resultData = Tool.getGson().fromJson(resposeStr, ResultData.class);
+            if(clazz == null){
+                return  resultData;
+            }
             String json = resultData.getJson();
             if (!Tool.isEmpty(json)) {
                 try {

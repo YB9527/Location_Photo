@@ -28,7 +28,6 @@ import com.xp.common.po.Status;
 import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.OkHttpClientUtils;
 import com.xp.common.tools.Tool;
-import com.xp.zjd.photo.PhotosFragment;
 import com.xp.zjd.po.ZJD;
 import com.xp.zjd.service.ZJDService;
 
@@ -109,7 +108,7 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
         et_zdnum.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                zjds.get(currentIndex).setZDNUM(((EditText) v).getText().toString());
+                //zjds.get(currentIndex).setZDNUM(((EditText) v).getText().toString());
                 return false;
             }
         });
@@ -328,8 +327,11 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
             AndroidTool.showToast("宗地没有编码，不能保存", Status.Error);
             return;
         }
-
-        zjd.setZDNUM(et_zdnum.getText().toString());
+        //如果宗地编码不同，并且是本地的，删除以前的redis
+        if(!et_zdnum.getText().toString().equals(zjd.getZDNUM())){
+            ZJDService.deleteReids(zjd.getZDNUM());
+            zjd.setZDNUM(et_zdnum.getText().toString());
+        }
         zjd.setQUANLI(et_quanli.getText().toString());
         zjd.setBz(et_bz.getText().toString());
         try {

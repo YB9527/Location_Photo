@@ -1,15 +1,11 @@
 package com.xp.zjd.fragments;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +26,6 @@ import com.esri.android.map.ags.ArcGISLocalTiledLayer;
 import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.runtime.ArcGISRuntime;
-import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.Geometry;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.Polygon;
@@ -50,7 +45,6 @@ import com.esri.core.tasks.SpatialRelationship;
 import com.esri.core.tasks.query.QueryParameters;
 import com.google.gson.reflect.TypeToken;
 import com.xp.R;
-import com.xp.common.fragment.SSS;
 import com.xp.common.po.MyCallback;
 import com.xp.common.po.ResultData;
 import com.xp.common.po.Status;
@@ -60,15 +54,13 @@ import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.ArcgisTool;
 import com.xp.common.tools.OkHttpClientUtils;
 import com.xp.common.tools.Tool;
-import com.xp.zjd.photo.PhotoService;
+import com.xp.zjd.service.PhotoService;
 import com.xp.zjd.po.FileSelect;
 import com.xp.zjd.po.MapListenerEnum;
 import com.xp.zjd.po.ZJD;
 import com.xp.zjd.po.ZJDGeometry;
 import com.xp.zjd.service.ArcgisService;
 import com.xp.zjd.service.ZJDService;
-
-import org.apache.http.impl.auth.SPNegoScheme;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -150,25 +142,30 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
             public void run() {
                 try {
                     AndroidTool.showProgressBar();
-                    Thread.sleep(3000); //休眠一秒
+                    Thread.sleep(10); //休眠一秒
                     //mMapView.setExtent(new Point(1.1748699318944164E7, 3350506.3943553544));
                     sp = mMapView.getSpatialReference();
-                    if (mMapView.getExtent() != null) {
+                  /*  if (mMapView.getExtent() != null) {
                         Point pt = mMapView.getExtent().getPoint(0);
                         if (pt != null) {
                             mMapView.setExtent(pt);
                         }
 
                     }
-                    mMapView.setScale(500);
+                    mMapView.setScale(500);*/
                     //添加服务器中地块
                     //添加本地地块
                     addZJDToGraphic();
+                    //ArcgisService.setLocationDisplayManager(location());
 
-                    //location();
 
                     //mMapView.setScale(1000);
-
+                    AndroidTool.getMainActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            location();
+                        }
+                    });
                     AndroidTool.closeProgressBar();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -177,7 +174,7 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         }).start();
     }
 
-    public void location() {
+    public LocationDisplayManager location() {
         //检查权限是否存在
         if (ContextCompat.checkSelfPermission(AndroidTool.getMainActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -191,6 +188,7 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
             }, 1);
         }
         final LocationDisplayManager locationDisplay = mMapView.getLocationDisplayManager();
+
         locationDisplay.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
         locationDisplay.start();
         Location location = locationDisplay.getLocation();
@@ -202,7 +200,7 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         point = locationDisplay.getPoint();
         point = locationDisplay.getPoint();
         locationDisplay.stop();
-
+        return locationDisplay;
 
     }
 
@@ -229,7 +227,6 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         mMapView.addLayer(drawGraphicsLayer);
 
 
-
         if (ArcgisService.findRedisLoadTDT()) {
             /**
              * 天地图矢量
@@ -250,11 +247,11 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
                     ArcGISLocalTiledLayer local = new ArcGISLocalTiledLayer(fileSelect.getPath());
                     mMapView.addLayer(local, i);
                 }
-            }else {
+            } else {
                 //arcgis 自带底图
                 String mapServerUrl = "http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer";
                 ArcGISTiledMapServiceLayer arcGISTiledMapServiceLayer = new ArcGISTiledMapServiceLayer(mapServerUrl);
-                mMapView.addLayer(arcGISTiledMapServiceLayer,0);
+                mMapView.addLayer(arcGISTiledMapServiceLayer, 0);
             }
         }
         //ArcGISLocalTiledLayer local = new ArcGISLocalTiledLayer(AndroidTool.getMainActivity().getFilesDir() + "/zjd/tpks/1.tpk");
@@ -352,10 +349,10 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
             case POINT:
                 if (zjd.getPhotos().size() > 0) {
                     graphic = new Graphic(geometry, new SimpleMarkerSymbol
-                            (hasePhoto, 3000, SimpleMarkerSymbol.STYLE.CIRCLE), map);
+                            (hasePhoto, 3, SimpleMarkerSymbol.STYLE.CIRCLE), map);
                 } else {
                     graphic = new Graphic(geometry, new SimpleMarkerSymbol
-                            (noPhoto, 3000, SimpleMarkerSymbol.STYLE.CIRCLE), map);
+                            (noPhoto, 3, SimpleMarkerSymbol.STYLE.CIRCLE), map);
                 }
 
                 break;
@@ -874,7 +871,7 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         public void onClick(View v) {
 
             location();
-            Layer local = mMapView.getLayer(mMapView.getLayers().length - 1);
+           /* Layer local = mMapView.getLayer(mMapView.getLayers().length - 1);
             SpatialReference sp = local.getSpatialReference();
 
             Polygon polygon = local.getExtent();
@@ -883,7 +880,7 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
             Point pt2 = polygon.getPoint(1);
             mMapView.setExtent(polygon);
             mMapView.setScale(500);
-            mMapView.getLayer(0).setVisible(false);
+            mMapView.getLayer(0).setVisible(false);*/
 
 
 

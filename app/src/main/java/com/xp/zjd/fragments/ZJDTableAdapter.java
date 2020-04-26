@@ -15,10 +15,9 @@ import com.xp.R;
 import com.xp.common.po.MyCallback;
 import com.xp.common.po.ResultData;
 import com.xp.common.po.Status;
-import com.xp.zjd.photo.PhotoService;
+import com.xp.zjd.service.PhotoService;
 import com.xp.zjd.po.ZJD;
 import com.xp.common.tools.AndroidTool;
-import com.xp.zjd.service.ArcgisService;
 import com.xp.zjd.service.ZJDService;
 
 

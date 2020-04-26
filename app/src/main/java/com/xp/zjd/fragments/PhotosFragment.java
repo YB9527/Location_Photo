@@ -1,4 +1,4 @@
-package com.xp.zjd.photo;
+package com.xp.zjd.fragments;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -37,6 +37,7 @@ import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.FileTool;
 import com.xp.common.tools.Photo;
 import com.xp.common.tools.Tool;
+import com.xp.zjd.service.PhotoService;
 
 import org.apache.http.Header;
 import org.jetbrains.annotations.NotNull;
@@ -201,6 +202,8 @@ public class PhotosFragment extends Fragment {
                             photo.setPath(desc);
                             if (state == 0) {
                                 FileTool.copyFile(path, desc);
+                               PhotoService.setPotoLocation(photo);
+
                                 photo.setZjd(zjd);
                                 zjd.getPhotos().add(photo);
                                 cbdPhotoAdpater.AddPhoto(photo);
@@ -306,7 +309,7 @@ public class PhotosFragment extends Fragment {
             viewHolder.cbd_photo_filename.setText(photo.getName());
             viewHolder.btu_photo_delete.setOnClickListener(this);
             //如果是 服务器的地块，且还没有上传， 就显示按钮
-            if (!photo.getUpload() && (photo.getZjd() == null || Tool.isTrue(photo.getZjd().getUpload()))) { //必须时web端的地块才可以
+            if (!photo.getUpload() && (photo.getZjd() != null && Tool.isTrue(photo.getZjd().getUpload()))) { //必须时web端的地块才可以
                 viewHolder.cbd_upload_photo.setVisibility(View.VISIBLE);
             } else {
                 viewHolder.cbd_upload_photo.setVisibility(View.INVISIBLE);
