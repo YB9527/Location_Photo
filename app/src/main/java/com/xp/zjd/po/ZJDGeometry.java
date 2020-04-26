@@ -47,6 +47,7 @@ public class ZJDGeometry {
     @Expose
     private String geometryType;
 
+
     public ZJDGeometry() {
     }
 

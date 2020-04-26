@@ -40,9 +40,22 @@ public class ZJD {
     private List<ZJDGeometry> zjdGeometry;//考虑多部件情况
 
 
+    /**
+     * 删除
+     */
+    private  List<Graphic> graphics;
 
 
+    public List<Graphic> getGraphics() {
+        if(graphics == null){
+            graphics = new ArrayList<>();
+        }
+        return graphics;
+    }
 
+    public void setGraphics(List<Graphic> graphics) {
+        this.graphics = graphics;
+    }
 
     public ZJD(String ZDNUM, String QUANLI) {
         this.ZDNUM = ZDNUM;

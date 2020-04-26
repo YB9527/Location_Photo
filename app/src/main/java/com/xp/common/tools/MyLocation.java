@@ -34,7 +34,8 @@ public class MyLocation {
         if (ActivityCompat.checkSelfPermission(AndroidTool.getMainActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(AndroidTool.getMainActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(AndroidTool.getMainActivity(), "权限不够", Toast.LENGTH_LONG).show();
+            AndroidTool.showAnsyTost("请打开GPS权限",Status.Error);
+
             return;
         }
 

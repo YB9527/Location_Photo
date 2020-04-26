@@ -131,7 +131,7 @@ public class ZJDService {
      * @param zjd
      * @param myCallback
      */
-    public static void updateDK( ZJD zjd, final MyCallback myCallback) throws ZJDException {
+    public static void updateDK(ZJD zjd, final MyCallback myCallback) throws ZJDException {
 
         if (zjd.getUpload()) {
             //更新服务器
@@ -151,22 +151,22 @@ public class ZJDService {
             //保存 //更新本地地块
             String dirZDNUM = zjd.getZDNUM();
             //检查宅基地编码，是否变了
-            if(zjd.getPhotos().size() >0){
-                String path =  zjd.getPhotos().get(0).getPath();
-                String tem =  path.replace(PhotoService.getDKPhotoDir(),"");
-                 dirZDNUM = tem.substring(0,tem.indexOf("/")); // zjdDirRoot.
-                if(!dirZDNUM.equals(zjd.getZDNUM())){
-                    File file1 = new File( PhotoService.getDKPhotoDir() + dirZDNUM);
+            if (zjd.getPhotos().size() > 0) {
+                String path = zjd.getPhotos().get(0).getPath();
+                String tem = path.replace(PhotoService.getDKPhotoDir(), "");
+                dirZDNUM = tem.substring(0, tem.indexOf("/")); // zjdDirRoot.
+                if (!dirZDNUM.equals(zjd.getZDNUM())) {
+                    File file1 = new File(PhotoService.getDKPhotoDir() + dirZDNUM);
                     //将原文件夹更改为A，其中路径是必要的。注意
-                   boolean bl = file1.renameTo(new File(PhotoService.getDKPhotoDir() + zjd.getZDNUM()));
+                    boolean bl = file1.renameTo(new File(PhotoService.getDKPhotoDir() + zjd.getZDNUM()));
                     //修改照片路径
-                    for (Photo photo :zjd.getPhotos()){
-                        photo.setPath(photo.getPath().replace(PhotoService.getDKPhotoDir() + dirZDNUM,PhotoService.getDKPhotoDir() + zjd.getZDNUM()));
+                    for (Photo photo : zjd.getPhotos()) {
+                        photo.setPath(photo.getPath().replace(PhotoService.getDKPhotoDir() + dirZDNUM, PhotoService.getDKPhotoDir() + zjd.getZDNUM()));
                     }
                 }
-                RedisTool.deleteRedisByMark("zjd_" +dirZDNUM);
+                RedisTool.deleteRedisByMark("zjd_" + dirZDNUM);
             }
-            RedisTool.updateRedis("zjd_" +zjd.getZDNUM(), zjd);
+            RedisTool.updateRedis("zjd_" + zjd.getZDNUM(), zjd);
             myCallback.call(new ResultData(Status.Success, "1"));
         }
     }
@@ -247,16 +247,52 @@ public class ZJDService {
      * @param zjd
      */
     private static void deleteLocalZJD(ZJD zjd) {
-        deleteReids( zjd.getZDNUM());
+        deleteReids(zjd.getZDNUM());
         //删除图片
         int count = PhotoService.deleteLocalAllByZJD(zjd);
     }
 
     /**
      * 删除宅基地的 redis
+     *
      * @param zdnum
      */
     public static void deleteReids(String zdnum) {
         RedisTool.deleteRedisByMark("zjd_" + zdnum);
+    }
+
+    /**
+     * 查找web 和 本地的地块
+     * @param zdnum
+     * @param myCallback
+     */
+    public static void findWebZJDByZDNUM(final String zdnum, final MyCallback myCallback) {
+        //查web端
+        OkHttpClientUtils.httpGet(getURLBasic() + "findbyzdnumresultdata?ZDNUM="+zdnum, new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
+                ResultData resultData = OkHttpClientUtils.resposeToResultData(response, ZJD.class);
+                if (resultData.getObject() != null) {
+                    myCallback.call(resultData);
+                } else {
+
+                        myCallback.call(null);
+
+                }
+            }
+        });
+        //查本地的
+    }
+
+
+
+    public static ZJD findLoaclZJDByZdnum(String zdnum) {
+        ZJD zjd  =RedisTool.findRedis("zjd_"+zdnum,ZJD.class);
+        return  zjd;
     }
 }

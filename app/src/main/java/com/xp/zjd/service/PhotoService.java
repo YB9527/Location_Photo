@@ -193,9 +193,10 @@ public class PhotoService {
             @Override
             public void call(ResultData resultData) {
                 Location location = ( Location)resultData.getObject();
-                photo.setLatitude(location.getLatitude());
-                photo.setLongitude(location.getLongitude());
-
+                if(location != null){
+                    photo.setLatitude(location.getLatitude());
+                    photo.setLongitude(location.getLongitude());
+                }
                 AndroidTool.closeProgressBar();
             }
         });

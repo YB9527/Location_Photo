@@ -488,6 +488,16 @@ public class PhotosFragment extends Fragment {
          */
         private void deletePhoto(final Photo photo) {
 
+            //没有上传的地块
+            if(!zjd.getUpload()){
+                zjd.getPhotos().remove(photo);
+                cbdPhotoAdpater.datas.remove(photo);
+                FileTool.deleteFile(photo.getPath());
+                cbdPhotoAdpater.notifyDataSetChanged();
+
+                return;
+            }
+            //上传的地块
             final CBDPhotoAdpater cbdPhotoAdpater = this;
             Map<String, Object> map = new HashMap<>();
             map.put("photo", photo);

@@ -108,7 +108,7 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
         et_zdnum.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                //zjds.get(currentIndex).setZDNUM(((EditText) v).getText().toString());
+                zjds.get(currentIndex).setZDNUM(((EditText) v).getText().toString());
                 return false;
             }
         });
@@ -194,8 +194,11 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
         }
     }
 
+    String oldZDNUM = "";
+
     private void lookdk(int i) {
         ZJD zjd = this.zjds.get(i);
+        oldZDNUM = zjd.getZDNUM();
         if (Tool.isTrue(zjd.getUpload())) {
             btu_delete.setVisibility(View.GONE);
             et_zdnum.setFocusable(false);
@@ -299,7 +302,7 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
             @Override
             public void call(ResultData resultData) {
                 if (resultData.getStatus() == Status.Success) {
-                   MapDKDialog.this.getDialog().dismiss();
+                    MapDKDialog.this.getDialog().dismiss();
                     myCallback.call(new ResultData(Status.Success, "2"));
                 }
             }
@@ -321,25 +324,82 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
      * 提交文字修改 修改是 1
      */
     private void submit() {
-        ZJD zjd = zjds.get(currentIndex);
-        String zdnum = et_zdnum.getText().toString();
+        AndroidTool.showProgressBar();
+        final ZJD zjd = zjds.get(currentIndex);
+        zjd.setZDNUM(et_zdnum.getText().toString());
+        String zdnum = zjd.getZDNUM();//宗地编码更新再 onkey事件中
+
         if (Tool.isEmpty(zdnum)) {
             AndroidTool.showToast("宗地没有编码，不能保存", Status.Error);
             return;
         }
-        //如果宗地编码不同，并且是本地的，删除以前的redis
-        if(!et_zdnum.getText().toString().equals(zjd.getZDNUM())){
-            ZJDService.deleteReids(zjd.getZDNUM());
-            zjd.setZDNUM(et_zdnum.getText().toString());
+
+        if (!oldZDNUM.equals(zjd.getZDNUM())) {
+            checkZJDzdnum(zjd.getZDNUM(), new MyCallback() {
+                @Override
+                public void call(ResultData resultData) {
+                    if (resultData != null && resultData.getObject() != null) {
+                        //代表zdnum有重复的
+                        AndroidTool.showAnsyTost("编码重复", Status.Error);
+                    } else {
+                        updateZJD(zjd, et_quanli.getText().toString(), et_bz.getText().toString());
+                        ZJDService.deleteReids(oldZDNUM);
+                        AndroidTool.closeProgressBar();
+                        MapDKDialog.this.dismiss();
+                    }
+                }
+            });
+        } else {
+            updateZJD(zjd, et_quanli.getText().toString(), et_bz.getText().toString());
+            AndroidTool.closeProgressBar();
+            MapDKDialog.this.dismiss();
         }
-        zjd.setQUANLI(et_quanli.getText().toString());
-        zjd.setBz(et_bz.getText().toString());
+    }
+
+    /**
+     * 保存修改的宅基地
+     *
+     * @param zjd
+     * @param quanli
+     * @param bz
+     */
+    private void updateZJD(ZJD zjd, String quanli, String bz) {
+        zjd.setQUANLI(quanli);
+        zjd.setBz(bz);
         try {
             ZJDService.updateDK(zjd, myCallback);
-            this.getDialog().dismiss();
-            AndroidTool.showToast("保存成功", Status.Error);
+            MapDKDialog.this.getDialog().dismiss();
+            AndroidTool.showAnsyTost("保存成功", Status.Error);
         } catch (ZJDException e) {
-            AndroidTool.showToast(e.getMessage(), Status.Error);
+            AndroidTool.showAnsyTost(e.getMessage(), Status.Error);
         }
+    }
+
+    /**
+     * 检查宗地编码是否重复
+     *
+     * @param zdnum
+     * @param myCallback
+     */
+    private void checkZJDzdnum(final String zdnum, final MyCallback myCallback) {
+        ZJDService.findWebZJDByZDNUM(zdnum, new MyCallback() {
+            @Override
+            public void call(ResultData resultData) {
+                if (resultData == null || resultData.getObject() == null) {
+                    ZJD zjd = ZJDService.findLoaclZJDByZdnum(zdnum);
+                    if (zjd != null) {
+                        ResultData resultData1 = new ResultData();
+                        resultData1.setObject(zjd);
+                        myCallback.call(resultData1);
+                        return;
+                    } else {
+                        myCallback.call(resultData);
+                        return;
+                    }
+                }
+                myCallback.call(resultData);
+
+            }
+        });
     }
 }

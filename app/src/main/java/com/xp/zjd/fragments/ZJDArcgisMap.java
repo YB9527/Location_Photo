@@ -43,6 +43,7 @@ import com.esri.core.symbol.TextSymbol;
 import com.esri.core.table.FeatureTable;
 import com.esri.core.tasks.SpatialRelationship;
 import com.esri.core.tasks.query.QueryParameters;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.xp.R;
 import com.xp.common.po.MyCallback;
@@ -52,6 +53,7 @@ import com.xp.common.tdttool.TianDiTuTiledMapServiceLayer;
 import com.xp.common.tdttool.TianDiTuTiledMapServiceType;
 import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.ArcgisTool;
+import com.xp.common.tools.JSONUtils;
 import com.xp.common.tools.OkHttpClientUtils;
 import com.xp.common.tools.Tool;
 import com.xp.zjd.service.PhotoService;
@@ -61,6 +63,8 @@ import com.xp.zjd.po.ZJD;
 import com.xp.zjd.po.ZJDGeometry;
 import com.xp.zjd.service.ArcgisService;
 import com.xp.zjd.service.ZJDService;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -160,12 +164,7 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
 
 
                     //mMapView.setScale(1000);
-                    AndroidTool.getMainActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            location();
-                        }
-                    });
+
                     AndroidTool.closeProgressBar();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -174,7 +173,7 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         }).start();
     }
 
-    public LocationDisplayManager location() {
+    public void location() {
         //检查权限是否存在
         if (ContextCompat.checkSelfPermission(AndroidTool.getMainActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -192,15 +191,18 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         locationDisplay.setAutoPanMode(LocationDisplayManager.AutoPanMode.LOCATION);
         locationDisplay.start();
         Location location = locationDisplay.getLocation();
+        if (location == null) {
+            return;
+        }
         double latitude = location.getLatitude();
         double longitude = location.getLongitude();
 
         Point point = locationDisplay.getPoint();
-        mMapView.setExtent(point);
+
         point = locationDisplay.getPoint();
         point = locationDisplay.getPoint();
         locationDisplay.stop();
-        return locationDisplay;
+
 
     }
 
@@ -225,7 +227,6 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         mMapView.addLayer(graphicsLayer);
         drawGraphicsLayer = new GraphicsLayer();
         mMapView.addLayer(drawGraphicsLayer);
-
 
         if (ArcgisService.findRedisLoadTDT()) {
             /**
@@ -303,7 +304,8 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         for (ZJDGeometry zjdGeometry : zjd.getZjdGeometry()
         ) {
             Geometry geometry = ArcgisTool.jsonToGeometry(zjdGeometry.getGeometry());
-            addZJDGraphic(geometry, zjd);
+            Graphic graphic = addZJDGraphic(geometry, zjd);
+
         }
     }
 
@@ -338,7 +340,7 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
      * @param geometry
      * @param zjd
      */
-    private void addZJDGraphic(Geometry geometry, ZJD zjd) {
+    private Graphic addZJDGraphic(Geometry geometry, ZJD zjd) {
         int hasePhoto = Color.GREEN;
         int noPhoto = Color.RED;
 
@@ -350,6 +352,7 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
                 if (zjd.getPhotos().size() > 0) {
                     graphic = new Graphic(geometry, new SimpleMarkerSymbol
                             (hasePhoto, 3, SimpleMarkerSymbol.STYLE.CIRCLE), map);
+
                 } else {
                     graphic = new Graphic(geometry, new SimpleMarkerSymbol
                             (noPhoto, 3, SimpleMarkerSymbol.STYLE.CIRCLE), map);
@@ -383,6 +386,7 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
         if (graphic != null) {
             graphicsLayer.addGraphic(graphic);
         }
+        return graphic;
 
     }
 
@@ -657,13 +661,19 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
                     @Override
                     public void call(ResultData result) {
                         if (result.getStatus() == Status.Success) {
-                            if (result.getMessage().equals("1")) {
-                                //更新地块
-                            } else if (result.getMessage().equals("2")) {
-                                //删除地块
-
+                            //只要对地块操作了，就删除后，在添加graphic
+                            for (ZJD zjd : zjds) {
+                                for (Graphic graphic : zjd.getGraphics()) {
+                                    //1、删除map上的图形
+                                    graphicsLayer.removeGraphic(graphic.getUid());
+                                }
+                                if (result.getMessage().equals("1")) {
+                                    //更新地块，2、再map上添加图形
+                                    addZJDToGraphic(zjd);
+                                } else if (result.getMessage().equals("2")) {
+                                    //删除地块
+                                }
                             }
-
                         }
                     }
                 });
@@ -685,10 +695,14 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
             int[] ids = graphicsLayer.getGraphicIDs((float) pt.getX(), (float) pt.getY(), 20);
             List<ZJD> zjds = new ArrayList<>();
             for (int i = 0; i < ids.length; i++) {
-                Object obj = graphicsLayer.getGraphic(ids[i]).getAttributeValue("zjd");
+                Graphic graphic = graphicsLayer.getGraphic(ids[i]);
+                //int id = ids[i];
+                //int uid = graphic.getUid();
+                //long _id = graphic.getId();
+                Object obj = graphic.getAttributeValue("zjd");
                 if (obj != null) {
                     ZJD zjd = Tool.JsonToObject((String) obj, ZJD.class);
-
+                    zjd.getGraphics().add(graphic);
                     zjds.add(zjd);
                 }
             }
