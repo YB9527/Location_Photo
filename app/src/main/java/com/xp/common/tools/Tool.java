@@ -199,7 +199,7 @@ public class Tool {
      */
     public static Gson getGson() {
         if (gson == null) {
-            gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation()
+            gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").excludeFieldsWithoutExposeAnnotation()
                     .create();
         }
         return gson;

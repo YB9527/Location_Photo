@@ -94,7 +94,6 @@ public class MainActivity extends AppCompatActivity
            UserService.checkIfLogin(null);
        }else{
            User user = Tool.JsonToObject(redisUser, User.class);
-           user.setRegistDate(null);
            UserService.checkIfLogin(user);
        }
 

@@ -28,7 +28,7 @@ public class User {
      * 注册日期
      */
     @Expose
-    private Date registDate;
+    private String registDate;
     /**
      * 用户级别
      */
@@ -87,11 +87,11 @@ public class User {
         this.password = password;
     }
 
-    public Date getRegistDate() {
+    public String getRegistDate() {
         return registDate;
     }
 
-    public void setRegistDate(Date registDate) {
+    public void setRegistDate(String registDate) {
         this.registDate = registDate;
     }
 

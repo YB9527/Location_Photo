@@ -7,7 +7,7 @@ import com.xp.common.po.Status;
 import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.FileTool;
 import com.xp.common.tools.OkHttpClientUtils;
-import com.xp.common.tools.Photo;
+import com.xp.zjd.po.Photo;
 import com.xp.common.tools.RedisTool;
 import com.xp.common.tools.Tool;
 import com.xp.zjd.po.ZJD;

@@ -23,7 +23,7 @@ import com.xp.common.po.ResultData;
 import com.xp.common.po.Status;
 import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.OkHttpClientUtils;
-import com.xp.common.tools.Photo;
+import com.xp.zjd.po.Photo;
 import com.xp.common.tools.Tool;
 import com.xp.zjd.service.PhotoService;
 import com.xp.zjd.po.ZJD;
@@ -64,7 +64,6 @@ public class ZJDFragment extends Fragment implements View.OnClickListener {
         adapter = getAdapter(view);
         ListView listView = view.findViewById(R.id.listview_dktable);
         listView.setAdapter(adapter);
-
         Button btuUploadAllPhoto = view.findViewById(R.id.cbd_upload_all_photo);
         //注入要上传的所有照片
         btuUploadAllPhoto.setTag(null);

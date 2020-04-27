@@ -19,7 +19,7 @@ import com.loopj.android.http.TextHttpResponseHandler;
 import com.loopj.android.image.SmartImageView;
 import com.xp.R;
 import com.xp.common.tools.AndroidTool;
-import com.xp.common.tools.Photo;
+import com.xp.zjd.po.Photo;
 import com.xp.common.tools.Tool;
 
 import org.apache.http.Header;

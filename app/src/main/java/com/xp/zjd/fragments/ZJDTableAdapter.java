@@ -178,6 +178,7 @@ public class ZJDTableAdapter extends BaseAdapter {
                             });
                         }else if(result.getMessage().equals("1")){
                             //修改地块
+
                         }
                         //检查宗地编码有没有重复的，有的话，不能保存
                         //AndroidTool.showAnsyTost("保存成功：" + zjd.getZDNUM(), Status.Success);

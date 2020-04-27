@@ -1,7 +1,8 @@
-package com.xp.common.tools;
+package com.xp.zjd.po;
 
 import com.google.gson.annotations.Expose;
-import com.xp.zjd.po.ZJD;
+import com.xp.common.tools.DateTool;
+import com.xp.common.tools.FileTool;
 
 import java.util.Date;
 
@@ -34,7 +35,7 @@ public class Photo {
      * 拍照时间
      */
     @Expose
-    private Date createDate;
+    private String createDate;
     private ZJD zjd;
 
     /**
@@ -44,11 +45,11 @@ public class Photo {
     public Photo(String path, boolean isUpload) {
         setPath(path);
         this.isUpload = isUpload;
-        this.createDate = new Date();
+        this.createDate = DateTool.dataFormat(new Date());
     }
 
     public Photo() {
-        this.createDate = new Date();
+        this.createDate = DateTool.dataFormat(new Date());
     }
 
     public Double getLatitude() {
@@ -67,11 +68,11 @@ public class Photo {
         this.longitude = longitude;
     }
 
-    public Date getCreateDate() {
+    public String getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(Date createDate) {
+    public void setCreateDate(String createDate) {
         this.createDate = createDate;
     }
 

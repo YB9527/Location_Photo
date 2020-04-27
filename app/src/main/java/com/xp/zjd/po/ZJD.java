@@ -2,7 +2,6 @@ package com.xp.zjd.po;
 
 import com.esri.core.map.Graphic;
 import com.google.gson.annotations.Expose;
-import com.xp.common.tools.Photo;
 import com.xp.usermanager.po.User;
 
 import java.util.ArrayList;

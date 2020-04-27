@@ -1,17 +1,6 @@
 package com.xp;
 
-import com.xp.common.tools.OkHttpClientUtils;
-import com.xp.common.tools.Photo;
-import com.xp.zjd.po.ZJD;
-
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
-
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 import static org.junit.Assert.*;
 

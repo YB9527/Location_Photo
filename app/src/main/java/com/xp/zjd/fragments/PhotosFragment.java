@@ -35,7 +35,7 @@ import com.xp.common.tools.OkHttpClientUtils;
 import com.xp.zjd.po.ZJD;
 import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.FileTool;
-import com.xp.common.tools.Photo;
+import com.xp.zjd.po.Photo;
 import com.xp.common.tools.Tool;
 import com.xp.zjd.service.PhotoService;
 
@@ -202,7 +202,7 @@ public class PhotosFragment extends Fragment {
                             photo.setPath(desc);
                             if (state == 0) {
                                 FileTool.copyFile(path, desc);
-                               PhotoService.setPotoLocation(photo);
+                                PhotoService.setPotoLocation(photo);
 
                                 photo.setZjd(zjd);
                                 zjd.getPhotos().add(photo);
@@ -421,6 +421,7 @@ public class PhotosFragment extends Fragment {
          * @param photo
          */
         private void uploadPhoto(final Photo photo, final Button uploadBtu) {
+            AndroidTool.showProgressBar();
             File file = new File(photo.getPath());
             OkHttpClient client = OkHttpClientUtils.getClient();
             MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown; charset=utf-8");
@@ -438,9 +439,8 @@ public class PhotosFragment extends Fragment {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-
+                    AndroidTool.closeProgressBar();
                 }
-
                 @Override
                 public void onResponse(Call call, final Response response) throws IOException {
                     final String responseStr = response.body().string();
@@ -451,8 +451,10 @@ public class PhotosFragment extends Fragment {
                                 photo.setUpload(true);
                                 uploadBtu.setVisibility(View.INVISIBLE);
                                 Toast.makeText(view.getContext(), "上传成功！", Toast.LENGTH_SHORT).show();
+                                AndroidTool.closeProgressBar();
                             } else {
                                 Toast.makeText(view.getContext(), "上传失败！", Toast.LENGTH_SHORT).show();
+                                AndroidTool.closeProgressBar();
                             }
                         }
                     });
@@ -489,7 +491,7 @@ public class PhotosFragment extends Fragment {
         private void deletePhoto(final Photo photo) {
 
             //没有上传的地块
-            if(!zjd.getUpload()){
+            if (!zjd.getUpload()) {
                 zjd.getPhotos().remove(photo);
                 cbdPhotoAdpater.datas.remove(photo);
                 FileTool.deleteFile(photo.getPath());
@@ -513,6 +515,7 @@ public class PhotosFragment extends Fragment {
                     AndroidTool.getMainActivity().runOnUiThread(new Runnable() {  //回到UI主线程
                         @Override
                         public void run() {
+                            zjd.getPhotos().remove(photo);
                             cbdPhotoAdpater.datas.remove(photo);
                             cbdPhotoAdpater.notifyDataSetChanged();
                             Toast.makeText(view.getContext(), "删除成功！", Toast.LENGTH_SHORT).show();

@@ -8,7 +8,7 @@ import com.xp.common.tools.MyLocation;
 import com.xp.zjd.po.ZJD;
 import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.FileTool;
-import com.xp.common.tools.Photo;
+import com.xp.zjd.po.Photo;
 import com.xp.common.tools.Tool;
 
 import java.io.File;
