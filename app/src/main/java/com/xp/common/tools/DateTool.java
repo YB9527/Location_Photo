@@ -16,6 +16,9 @@ public class DateTool {
      * @return
      */
     public static String dataFormat(Date date){
+        if(date == null){
+            return  "";
+        }
         return  simpleDateFormat.format(date);
     }
 

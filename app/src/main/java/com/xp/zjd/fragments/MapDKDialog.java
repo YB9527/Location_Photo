@@ -365,7 +365,7 @@ public class MapDKDialog extends DialogFragment implements View.OnClickListener 
      */
     private void updateZJD(ZJD zjd, String quanli, String bz) {
         zjd.setQUANLI(quanli);
-        zjd.setBz(bz);
+        zjd.setBZ(bz);
         try {
             ZJDService.updateDK(zjd, myCallback);
             MapDKDialog.this.getDialog().dismiss();

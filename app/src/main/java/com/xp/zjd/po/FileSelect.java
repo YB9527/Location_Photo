@@ -32,7 +32,7 @@ public class FileSelect {
         this.name = FileTool.getFileName(file.getAbsolutePath());
         this.path = file.getAbsolutePath();
         this.fileSize = file.length() / 1024d / 1024d;
-        this.fileCreatedate = FileTool.getCreateDate(file);
+        //this.fileCreatedate = FileTool.getCreateDate(file);
     }
 
     /**

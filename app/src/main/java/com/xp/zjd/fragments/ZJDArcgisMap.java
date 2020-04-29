@@ -27,6 +27,7 @@ import com.esri.android.map.ags.ArcGISTiledMapServiceLayer;
 import com.esri.android.map.event.OnSingleTapListener;
 import com.esri.android.runtime.ArcGISRuntime;
 import com.esri.core.geometry.Geometry;
+import com.esri.core.geometry.GeometryEngine;
 import com.esri.core.geometry.Point;
 import com.esri.core.geometry.Polygon;
 import com.esri.core.geometry.Polyline;
@@ -43,7 +44,6 @@ import com.esri.core.symbol.TextSymbol;
 import com.esri.core.table.FeatureTable;
 import com.esri.core.tasks.SpatialRelationship;
 import com.esri.core.tasks.query.QueryParameters;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.xp.R;
 import com.xp.common.po.MyCallback;
@@ -53,18 +53,14 @@ import com.xp.common.tdttool.TianDiTuTiledMapServiceLayer;
 import com.xp.common.tdttool.TianDiTuTiledMapServiceType;
 import com.xp.common.tools.AndroidTool;
 import com.xp.common.tools.ArcgisTool;
-import com.xp.common.tools.JSONUtils;
 import com.xp.common.tools.OkHttpClientUtils;
 import com.xp.common.tools.Tool;
 import com.xp.zjd.service.PhotoService;
 import com.xp.zjd.po.FileSelect;
 import com.xp.zjd.po.MapListenerEnum;
 import com.xp.zjd.po.ZJD;
-import com.xp.zjd.po.ZJDGeometry;
 import com.xp.zjd.service.ArcgisService;
 import com.xp.zjd.service.ZJDService;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -149,9 +145,13 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
             public void run() {
                 try {
                     AndroidTool.showProgressBar();
-                    Thread.sleep(10); //休眠一秒
+                    Thread.sleep(1000); //休眠一秒
                     //mMapView.setExtent(new Point(1.1748699318944164E7, 3350506.3943553544));
                     sp = mMapView.getSpatialReference();
+                   /* Point point = new Point(35393254.656079866,3334267.8725);
+                    Graphic  graphic = new Graphic(point, new SimpleMarkerSymbol
+                            (Color.RED, 3000, SimpleMarkerSymbol.STYLE.CIRCLE));
+                    graphicsLayer.addGraphic(graphic);*/
                   /*  if (mMapView.getExtent() != null) {
                         Point pt = mMapView.getExtent().getPoint(0);
                         if (pt != null) {
@@ -308,11 +308,19 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
      * @param zjd
      */
     public void addZJDToGraphic(ZJD zjd) {
-        for (ZJDGeometry zjdGeometry : zjd.getZjdGeometry()
-        ) {
-            Geometry geometry = ArcgisTool.jsonToGeometry(zjdGeometry.getGeometry());
-            Graphic graphic = addZJDGraphic(geometry, zjd);
+        Geometry geometry = null;
+        //检查数据是那种结构的，如果geotools 转的数据，需要转换下 string
+        String geometryStr = zjd.getGeometry();
+        if (geometryStr != null && geometryStr.contains("type")) {
+            geometry =ArcgisTool.getGeoToolsMetry(geometryStr);
+        } else {
+            geometry = ArcgisTool.jsonToGeometry(zjd.getGeometry());
         }
+        if(geometry == null){
+            return;
+        }
+        Graphic graphic = addZJDGraphic(geometry, zjd);
+
     }
 
     /**
@@ -562,6 +570,7 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
                 //两个点不构成面
                 return;
             }
+
             final Polygon polygon = new Polygon();
             for (int i = 0; i < pointList.size(); i++) {
                 if (i == 0) {
@@ -580,8 +589,7 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
             } else {
                 final List<ZJD> addZJDLists = new ArrayList<>();
                 final ZJD zjd = new ZJD();
-                ZJDGeometry geometry = new ZJDGeometry(sp, polygon);
-                zjd.getZjdGeometry().add(geometry);
+                zjd.setGeometry(GeometryEngine.geometryToJson(sp, polygon));
                 addZJDLists.add(zjd);
                 MapDKDialog zjdDialog = MapDKDialog.newInstance(zjds, addZJDLists, new MyCallback() {
                     @Override
@@ -635,8 +643,8 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
             } else {
                 final List<ZJD> addZJDLists = new ArrayList<>();
                 final ZJD zjd = new ZJD();
-                ZJDGeometry geometry = new ZJDGeometry(sp, polyline);
-                zjd.getZjdGeometry().add(geometry);
+
+                zjd.setGeometry(GeometryEngine.geometryToJson(sp, polyline));
                 addZJDLists.add(zjd);
                 MapDKDialog zjdDialog = MapDKDialog.newInstance(zjds, addZJDLists, new MyCallback() {
                     @Override
@@ -665,9 +673,10 @@ public class ZJDArcgisMap extends Fragment implements View.OnClickListener {
             //填写地块信息（地块名称，编码，备注信息）
             final List<ZJD> addZJDLists = new ArrayList<>();
             final ZJD zjd = new ZJD();
-            ZJDGeometry geometry = new ZJDGeometry(sp, mapPoint);
-            zjd.getZjdGeometry().add(geometry);
+
+            zjd.setGeometry(GeometryEngine.geometryToJson(sp, mapPoint));
             addZJDLists.add(zjd);
+
             MapDKDialog zjdDialog = MapDKDialog.newInstance(zjds, addZJDLists, new MyCallback() {
                 @Override
                 public void call(ResultData result) {

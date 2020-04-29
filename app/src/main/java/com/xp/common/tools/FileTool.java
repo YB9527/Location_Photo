@@ -5,6 +5,8 @@ import android.annotation.TargetApi;
 import android.icu.text.SimpleDateFormat;
 import android.os.Build;
 
+import androidx.annotation.RequiresApi;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -208,26 +210,30 @@ public class FileTool {
      * @param file
      * @return
      */
+    @TargetApi(Build.VERSION_CODES.O)
     public static Date getCreateDate(File file) {
         return getCreateDate(file.getAbsolutePath());
     }
 
     /**
      * 获取文件的创建日期  "yyyy-MM-dd HH-mm-ss"
-     *
+     * @TargetApi(Build.VERSION_CODES.O)
      * @param path
      * @return
      */
-    @TargetApi(Build.VERSION_CODES.O)
+
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private static  Date getCreateDate(String path) {
         try {
             FileTime t = Files.readAttributes(Paths.get(path), BasicFileAttributes.class).creationTime();
             long millis = t.toMillis();
             return new Date(millis);
 
+
         } catch (Exception e) {
             AndroidTool.showAnsyTost(e.getMessage());
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return null;
     }

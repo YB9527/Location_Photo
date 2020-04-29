@@ -173,7 +173,7 @@ public class PhotosFragment extends Fragment {
     }
 
     /**
-     * 弹窗 修改照片备注
+     * 弹窗 修改照片名字
      *
      * @param photo
      */

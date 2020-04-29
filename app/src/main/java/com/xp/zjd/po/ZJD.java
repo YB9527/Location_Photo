@@ -24,7 +24,7 @@ public class ZJD {
     @Expose
     private String QUANLI;
     @Expose
-    private String bz;
+    private String BZ;
     @Expose
     private List<Photo> photos;
     @Expose
@@ -35,8 +35,9 @@ public class ZJD {
      */
     @Expose
     private Boolean isUpload;
+
     @Expose
-    private List<ZJDGeometry> zjdGeometry;//考虑多部件情况
+    private String geometry;
 
 
     /**
@@ -62,29 +63,28 @@ public class ZJD {
 
         //类初始化
         this.isUpload =false;
-        this.zjdGeometry = new ArrayList<>();
     }
 
     public ZJD() {
         //类初始化
         this.isUpload =false;
-        this.zjdGeometry = new ArrayList<>();
+
     }
 
-    public List<ZJDGeometry> getZjdGeometry() {
-        return zjdGeometry;
+    public String getGeometry() {
+        return geometry;
     }
 
-    public void setZjdGeometry(List<ZJDGeometry> zjdGeometry) {
-        this.zjdGeometry = zjdGeometry;
+    public void setGeometry(String geometry) {
+        this.geometry = geometry;
     }
 
-    public String getBz() {
-        return bz;
+    public String getBZ() {
+        return BZ;
     }
 
-    public void setBz(String bz) {
-        this.bz = bz;
+    public void setBZ(String BZ) {
+        this.BZ = BZ;
     }
 
     public User getUser() {
@@ -173,7 +173,7 @@ public class ZJD {
                 ", isSelectNative=" + isSelectNative +
                 ", ZDNUM='" + ZDNUM + '\'' +
                 ", QUANLI='" + QUANLI + '\'' +
-                ", bz='" + bz + '\'' +
+                ", BZ='" + BZ + '\'' +
                 ", photos=" + photos +
                 ", user=" + user +
                 ", isUpload=" + isUpload +

@@ -61,7 +61,7 @@ public class MapSetting extends Fragment implements View.OnClickListener {
             geodatabaseSelect = new GeodatabaseSelect(view,geodatabaseFileSelected);
         }
 
-        Button btu_downloadgeodatabase = view.findViewById(R.id.btu_downloadgeodatabase);
+     Button btu_downloadgeodatabase = view.findViewById(R.id.btu_downloadgeodatabase);
         btu_downloadgeodatabase.setOnClickListener(this);
 
         Button btu_submit = view.findViewById(R.id.btu_submit);
