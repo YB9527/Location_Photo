@@ -216,7 +216,8 @@ public class PhotosFragment extends Fragment {
                                     photoCopy.setPath(desc);
                                     Map<String, Object> map = new HashMap<>();
                                     map.put("photo", photoCopy);
-                                    zjd.setPhotos(null);
+                                    //zjd.setPhotos(null);
+
                                     map.put("zjd", zjd);
                                     OkHttpClientUtils.httpPostObjects(PhotoService.getURLBasic() + "updatephoto", map, new Callback() {
                                         @Override
@@ -236,6 +237,8 @@ public class PhotosFragment extends Fragment {
                                     public void run() {
                                         new File(path).renameTo(new File(desc));
                                         photo.setPath(desc);
+
+
                                         cbdPhotoAdpater.notifyDataSetChanged();
                                     }
                                 });
@@ -453,7 +456,7 @@ public class PhotosFragment extends Fragment {
                                 Toast.makeText(view.getContext(), "上传成功！", Toast.LENGTH_SHORT).show();
                                 AndroidTool.closeProgressBar();
                             } else {
-                                Toast.makeText(view.getContext(), "上传失败！", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(view.getContext(), "上传失败！"+responseStr, Toast.LENGTH_SHORT).show();
                                 AndroidTool.closeProgressBar();
                             }
                         }

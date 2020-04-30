@@ -169,13 +169,13 @@ public class MainActivity extends AppCompatActivity
                 //查看地块
                 AndroidTool.replaceFrameLayout(new ZJDFragment());
                 break;
-            case R.id.cbd_jtcy_item:
+           /* case R.id.cbd_jtcy_item:
                 //回到首页
                 AndroidTool.replaceFrameLayout(new InitFragment());
-                break;
-            case R.id.map_item:
+                break;*/
+           /* case R.id.map_item:
                 AndroidTool.replaceFrameLayout(new TDTFragment());
-                break;
+                break;*/
             case R.id.zjd_arcgismap_item:
                 AndroidTool.replaceFrameLayout( ZJDArcgisMap.getInstance());
                 break;

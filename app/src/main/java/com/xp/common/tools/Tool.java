@@ -66,15 +66,16 @@ public class Tool {
         }
         return client;
     }
-
-
     /**
      * 获取本机ip地址
      *
      * @return
      */
     public static String getHostAddress() {
-        String hostAddress = "http://192.168.2.176:3334/";
+        //String hostAddress = "http://192.168.2.176:3333/";
+       // String hostAddress = "http://192.168.3.3:3333/springboot/";
+        //String hostAddress = "http://192.168.3.3:3333/";
+        String hostAddress = "http://prsmartoa.com:10529/springboot/";
         return hostAddress;
     }
 

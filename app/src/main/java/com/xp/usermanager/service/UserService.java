@@ -85,7 +85,7 @@ public class UserService {
             OkHttpClientUtils.httpPost(UserService.getURLBasic() + "login", user, new Callback() {
                 @Override
                 public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    AndroidTool.showAnsyTost("服务器无响应,登录失败！！！");
+                    AndroidTool.showAnsyTost("服务器无响应,登录失败！！！"+UserService.getURLBasic() + "login");
                     AndroidTool.closeProgressBar();
                 }
 
